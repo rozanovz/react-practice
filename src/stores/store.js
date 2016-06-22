@@ -2,18 +2,13 @@ import { EventEmitter } from 'events';
 import AppConstants from '../constants/constants';
 import dummyNotices from '../dymmyData/dummyNotices';
 import { dispatch, register } from '../dispatchers/dispatcher';
-import dymmyDirs from '../dymmyData/dymmyDirs'
+import axios from 'axios';
 
 let notices = dummyNotices();
-let directories = dymmyDirs();
-
 const NoticeStore = Object.assign(EventEmitter.prototype, {
-	directories: directories,
 	notices: notices,
 	_maxListeners: Infinity,
-
-
-
+	
 	emitChange (CHANGE_EVENT, params) {
 		this.emit(CHANGE_EVENT, params);
 	},
@@ -27,7 +22,7 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 
 
 	getDirs(){
-		return NoticeStore.directories;
+		return axios.get('/directories').then(response => response.data);
 	},
 
 	geDirectoryNotices(id) {
@@ -42,9 +37,22 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 		let filterDirs = (dirslist = []) => {
 			return dirslist.forEach(item => (item.id == id) ? (dirName = item.name) : filterDirs(item.subDirectories));
 		};
-		filterDirs(NoticeStore.directories);
+		axios.get('/directories').then(response => filterDirs(response.data));
 		return dirName;
 	},
+
+	createDir(){
+		return axios({
+		  method: 'post',
+		  url: '/directories',
+		  data: {
+		    parentId: 1,
+		    name: 'Flintstone'
+		  }
+		}).then((res)=>{console.log(res)});
+	},
+
+
 
 	getNoticesByDirId (params) {
 		return NoticeStore.notices.filter(notice => notice.directoryId === Number(params));
@@ -58,7 +66,7 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 		return NoticeStore.notices = NoticeStore.notices.filter(item => item.id !== notice.id);
 	},
 
-  dispatcherIndex: register(function(action){
+	dispatcherIndex: register(function(action){
 		switch (action.actionType) {
 			case AppConstants.LOAD_NOTICES:
 				action.data = NoticeStore.getNoticesByDirId(action.item.id);
@@ -67,10 +75,14 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 			case AppConstants.UPDATE_NOTICE:
 				NoticeStore.updateNotice(action.item);
 				break;
+
+			case AppConstants.ADD_DIRECTORY:
+				NoticeStore.createDir();
+				break;
 		}
 
-    NoticeStore.emitChange(action.actionType, action);
-  })
+	NoticeStore.emitChange(action.actionType, action);
+	})
 });
 
 export default NoticeStore;
