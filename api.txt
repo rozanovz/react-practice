@@ -1,5 +1,7 @@
 GET     /Returns index.html
 
+
+
 GET     /directories
 Returns directories list
 

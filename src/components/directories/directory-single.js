@@ -6,6 +6,11 @@ import NoticeStore from '../../stores/store';
 import AppActions from '../../actions/actions';
 import AppConstants from '../../constants/constants';
 
+let ulStyles = {
+  listStyleType: 'none',
+  paddingLeft: 25
+};
+
 export default class Directory extends React.Component {
   constructor(props){
 		super(props);
@@ -24,9 +29,9 @@ export default class Directory extends React.Component {
         name={sub.name}
         isSub={true}
         parent={true}
-        subDirectories={sub.subDirectories}/>
+        subDirectories={sub.children.length > 0 ? sub.children : null}/>
     })
-    return <ul>{list}</ul>;
+    return <ul style={ulStyles}>{list}</ul>;
   }
 
   makeAction(){

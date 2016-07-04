@@ -11,7 +11,7 @@ export default (props) => {
   return (
     <div className="col-xs-12">
 			<button
-        onClick={AppActions.fireAction.bind(null, props.action, {id: props.directoryId, txt:props.txt} )}
+        onClick={AppActions.fireAction.bind(null, props.action, {id: props.id, txt:props.txt} )}
         className="btn btn-primary text-center"
         style={style}
       >

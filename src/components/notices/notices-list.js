@@ -7,7 +7,11 @@ import AppConstants from '../../constants/constants';
 export default class NoticesList extends React.Component {
 	constructor(props){
 		super(props);
-		this.state = NoticeStore.geDirectoryNotices(this.props.folderId.directoryId);
+		console.log(props);
+		this.state = {
+			noticesItems: [],
+			activeFolder: ''
+		}
 		this.loadNotices = this.loadNotices.bind(this);
 		this.dirNameChanged = this.dirNameChanged.bind(this);
 	}
@@ -28,10 +32,12 @@ export default class NoticesList extends React.Component {
 	}
 
 	loadNotices(event){
+		debugger;
+		console.log(event);
 		this.setState({
-			noticesItems: event.data,
+			noticesItems: event.item.data,
 			activeFolder: event.item.name
-		})
+		});
 	}
 
 	render () {
@@ -39,7 +45,7 @@ export default class NoticesList extends React.Component {
 			<div className="col-xs-3">
 				<h1>{this.state.activeFolder}</h1>
 				<ul className="list-inline">
-					{this.state.noticesItems.map(notice => <NoticeIcon key={notice.id} item={notice} />)}
+					{this.state.noticesItems.map(notice => notice.directoryId == this.props.folderId.directoryId ? <NoticeIcon key={notice.id} item={notice} /> : null)}
 				</ul>
 			</div>
 		);

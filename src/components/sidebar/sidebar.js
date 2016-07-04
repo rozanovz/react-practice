@@ -9,6 +9,7 @@ export default (props) => {
       <SidebarButton
         glyphiconClass="glyphicon glyphicon-plus"
         txt="Add Directory"
+        id={props.params}
         action='ADD_DIRECTORY'>
       </SidebarButton>
 

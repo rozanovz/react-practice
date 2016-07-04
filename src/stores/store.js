@@ -1,12 +1,9 @@
 import { EventEmitter } from 'events';
 import AppConstants from '../constants/constants';
-import dummyNotices from '../dymmyData/dummyNotices';
 import { dispatch, register } from '../dispatchers/dispatcher';
 import axios from 'axios';
 
-let notices = dummyNotices();
 const NoticeStore = Object.assign(EventEmitter.prototype, {
-	notices: notices,
 	_maxListeners: Infinity,
 	
 	emitChange (CHANGE_EVENT, params) {
@@ -19,44 +16,38 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 		this.removeListener(CHANGE_EVENT, callback);
 	},
 
-
-
 	getDirs(){
-		return axios.get('/directories').then(response => response.data);
+		return axios.get('/directories').then(response => NoticeStore.collect(response.data, response.data));
 	},
 
-	geDirectoryNotices(id) {
-		return {
-			noticesItems: id ? NoticeStore.getNoticesByDirId(id) : [],
-			activeFolder: id ? NoticeStore.getDirNameById(id): ""
-		};
-	},
+	collect(arrToChange, originalArr) {
+	    arrToChange.forEach((key)=>{
+	    	key.children = [];
+	    	originalArr.forEach((ckey)=>{
+		        if(key.id == ckey.parentId){
+		          key.children = [...key.children, ckey];
+		        }
+	    	});
+	    	this.collect(key.children, originalArr);
+	    });
+	    return [arrToChange[0]];
+  	},
 
-	getDirNameById(id){
-		let dirName;
-		let filterDirs = (dirslist = []) => {
-			return dirslist.forEach(item => (item.id == id) ? (dirName = item.name) : filterDirs(item.subDirectories));
-		};
-		axios.get('/directories').then(response => filterDirs(response.data));
-		return dirName;
-	},
-
-	createDir(){
+	createDir(id){
 		return axios({
 		  method: 'post',
 		  url: '/directories',
 		  data: {
-		    parentId: 1,
-		    name: 'Flintstone'
+		    parentId: id,
+		    name: `${id} Flin`
 		  }
-		}).then((res)=>{console.log(res)});
+		}).then((res)=>{
+			console.log(res)
+			NoticeStore.emitChange('DIRECTORY_ADDED', res.data);
+		});
 	},
 
 
-
-	getNoticesByDirId (params) {
-		return NoticeStore.notices.filter(notice => notice.directoryId === Number(params));
-	},
 
 	getNoticesById (params) {
 		return NoticeStore.notices.filter(notice => notice.id === Number(params));
@@ -66,10 +57,30 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 		return NoticeStore.notices = NoticeStore.notices.filter(item => item.id !== notice.id);
 	},
 
+	createNotice(action){
+		return axios({
+		  method: 'post',
+		  url: '/notices',
+		  data: {
+				directoryId: 2, 
+				title: action.item.title, 
+				description: action.description, 
+				tags: action.item.tags
+			}
+		}).then((res)=>{console.log(res)});
+	},
+
 	dispatcherIndex: register(function(action){
 		switch (action.actionType) {
 			case AppConstants.LOAD_NOTICES:
-				action.data = NoticeStore.getNoticesByDirId(action.item.id);
+				return axios.get('/notices').then(response => {
+					action.item.data = response.data;
+					return NoticeStore.emitChange(action.actionType, action);
+				});
+				break;
+
+			case AppConstants.ADD_NOTICE:
+				NoticeStore.createNotice(action);
 				break;
 
 			case AppConstants.UPDATE_NOTICE:
@@ -77,7 +88,7 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
 				break;
 
 			case AppConstants.ADD_DIRECTORY:
-				NoticeStore.createDir();
+				NoticeStore.createDir(action.item.id);
 				break;
 		}
 

@@ -59,7 +59,12 @@ export default class Notice extends React.Component {
 		if(this.props.params.id != 'new')
 			AppActions.fireAction.bind(null, 'UPDATE_NOTICE', {notice: this.state})();
 		else
-			AppActions.fireAction.bind(null, 'ADD_NOTICE', {notice: this.state})();
+			AppActions.fireAction.bind(null, 'ADD_NOTICE', {
+				'directoryId': 1,
+		        'title': this.state.title,
+		        'description': this.state.description,
+		        'tags': this.state.tags
+			})();
 		hashHistory.push('/');
 	}
 
