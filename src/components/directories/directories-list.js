@@ -2,29 +2,29 @@ import React from 'react';
 import NoticeStore from '../../stores/store';
 import Directory from './directory-single';
 import AppConstants from '../../constants/constants';
-
+import AppActions from '../../actions/actions';
 
 export default class DirectoriesList extends React.Component{
   constructor(props){
     super(props)
     this.state = {dirsList:[]};
+    this.createList = this.createList.bind(this);
     this.created = this.created.bind(this);
   }
 
-  CreateList (){
-    return NoticeStore.getDirs()
-    .then(list => {
-      this.setState({
-        dirsList: list
-            .map( key => <Directory 
-              key={key.id} 
-              id={key.id} 
-              name={key.name} 
-              isSub={false} 
-              parent={true} 
-              subDirectories={key.children} 
-            /> )
-      });
+  createList (event){
+    console.log(event);
+    this.setState({
+      dirsList: event.item.data
+          .map( key => <Directory
+            key={key.id}
+            id={key.id}
+            name={key.name}
+            isSub={false}
+            parent={true}
+            parentId={ key.parentId }
+            subDirectories={key.children}
+          /> )
     });
   }
 
@@ -34,11 +34,16 @@ export default class DirectoriesList extends React.Component{
 
   componentWillMount(){
     NoticeStore.addChangeListener(AppConstants.DIRECTORY_ADDED, this.created);
-    this.CreateList();
+    NoticeStore.addChangeListener(AppConstants.LOAD_DIRECTORIES, this.createList);
+  }
+
+  componentDidMount(){
+    AppActions.fireAction.bind(null, 'LOAD_DIRECTORIES', {data: []})();
   }
 
   componentWillUnmount(){
     NoticeStore.removeChangeListener(AppConstants.DIRECTORY_ADDED, this.created);
+    NoticeStore.removeChangeListener(AppConstants.LOAD_DIRECTORIES, this.createList);
   }
 
 	render(){

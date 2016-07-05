@@ -1,99 +1,57 @@
-import { EventEmitter } from 'events';
+import {EventEmitter} from 'events';
 import AppConstants from '../constants/constants';
-import { dispatch, register } from '../dispatchers/dispatcher';
-import axios from 'axios';
+import {dispatch, register} from '../dispatchers/dispatcher';
+import noticesStore from './noticesStore';
+import directoriesStore from './directoriesStore';
 
 const NoticeStore = Object.assign(EventEmitter.prototype, {
-	_maxListeners: Infinity,
-	
-	emitChange (CHANGE_EVENT, params) {
-		this.emit(CHANGE_EVENT, params);
-	},
-	addChangeListener (CHANGE_EVENT, callback) {
-		this.on(CHANGE_EVENT, callback);
-	},
-	removeChangeListener (CHANGE_EVENT ,callback) {
-		this.removeListener(CHANGE_EVENT, callback);
-	},
+  _maxListeners: Infinity,
 
-	getDirs(){
-		return axios.get('/directories').then(response => NoticeStore.collect(response.data, response.data));
-	},
+  emitChange(CHANGE_EVENT, params) { this.emit(CHANGE_EVENT, params); },
+  addChangeListener(CHANGE_EVENT, callback) { this.on(CHANGE_EVENT, callback); },
+  removeChangeListener(CHANGE_EVENT, callback) { this.removeListener(CHANGE_EVENT, callback); },
 
-	collect(arrToChange, originalArr) {
-	    arrToChange.forEach((key)=>{
-	    	key.children = [];
-	    	originalArr.forEach((ckey)=>{
-		        if(key.id == ckey.parentId){
-		          key.children = [...key.children, ckey];
-		        }
-	    	});
-	    	this.collect(key.children, originalArr);
-	    });
-	    return [arrToChange[0]];
-  	},
+  dispatcherIndex: register(function(action) {
+    switch (action.actionType) {
+      case AppConstants.LOAD_NOTICES:
+        noticesStore.getNotices(action).then(res => NoticeStore.emitChange(res.actionType, res));
+        break;
+      case AppConstants.ADD_NOTICE:
+        noticesStore.createNotice(action).then(res => console.log(res));
+        break;
+      case AppConstants.UPDATE_NOTICE:
+        noticesStore.updateNotice(action).then(res => console.log(res));
+        break;
+      case AppConstants.DELETE_NOTICE:
+        noticesStore.deleteNotice(action).then(res => console.log(res));
+        break;
+      case AppConstants.UPDATE_NOTICE_POSITION:
+        noticesStore.updateNoticePosition(action).then(res => console.log(res));
+      case AppConstants.UPDATE_NOTICE_NAME:
+        directoriesStore.updateDirectoryName(action).then(res => console.log(res));
+        break;
 
-	createDir(id){
-		return axios({
-		  method: 'post',
-		  url: '/directories',
-		  data: {
-		    parentId: id,
-		    name: `${id} Flin`
-		  }
-		}).then((res)=>{
-			console.log(res)
-			NoticeStore.emitChange('DIRECTORY_ADDED', res.data);
-		});
-	},
+      case AppConstants.LOAD_DIRECTORIES:
+        directoriesStore.getDirs(action).then(res => NoticeStore.emitChange(res.actionType, res));
+        break;
+      case AppConstants.ADD_DIRECTORY:
+        directoriesStore.createDir(action.item.id).then(res => NoticeStore.emitChange('DIRECTORY_ADDED', res.data));
+        break;
+      case AppConstants.UPDATE_DIRECTORY:
+        directoriesStore.updateDirectory(action).then(res => console.log(res));
+        break;
+      case AppConstants.DELETE_DIRECTORY:
+        directoriesStore.deleteDirectory(action).then(res => console.log(res));
+        break;
+      case AppConstants.UPDATE_DIRECTORY_NAME:
+        directoriesStore.updateDirectoryName(action).then(res => console.log(res));
+        break;
 
-
-
-	getNoticesById (params) {
-		return NoticeStore.notices.filter(notice => notice.id === Number(params));
-	},
-
-	updateNotice(notice){
-		return NoticeStore.notices = NoticeStore.notices.filter(item => item.id !== notice.id);
-	},
-
-	createNotice(action){
-		return axios({
-		  method: 'post',
-		  url: '/notices',
-		  data: {
-				directoryId: 2, 
-				title: action.item.title, 
-				description: action.description, 
-				tags: action.item.tags
-			}
-		}).then((res)=>{console.log(res)});
-	},
-
-	dispatcherIndex: register(function(action){
-		switch (action.actionType) {
-			case AppConstants.LOAD_NOTICES:
-				return axios.get('/notices').then(response => {
-					action.item.data = response.data;
-					return NoticeStore.emitChange(action.actionType, action);
-				});
-				break;
-
-			case AppConstants.ADD_NOTICE:
-				NoticeStore.createNotice(action);
-				break;
-
-			case AppConstants.UPDATE_NOTICE:
-				NoticeStore.updateNotice(action.item);
-				break;
-
-			case AppConstants.ADD_DIRECTORY:
-				NoticeStore.createDir(action.item.id);
-				break;
-		}
-
-	NoticeStore.emitChange(action.actionType, action);
-	})
+      default:
+        NoticeStore.emitChange(action.actionType, action);
+        break;
+    };
+  })
 });
 
 export default NoticeStore;

@@ -18,14 +18,16 @@ export default (props) => {
           glyphiconClass="glyphicon glyphicon-pencil"
           txt="Add Notice"
           action='ADD_NOTICE'>
+          id={props.params}
         </SidebarButton>
       </Link>
 
       <SidebarButton
         glyphiconClass="glyphicon glyphicon-remove"
         txt="Remove"
-        action='REMOVE_DIRECTORY'
+        action='DELETE_DIRECTORY'
         directoryId={props.params}
+        id={props.params}
         >
       </SidebarButton>
     </div>

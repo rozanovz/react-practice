@@ -32,8 +32,6 @@ export default class NoticesList extends React.Component {
 	}
 
 	loadNotices(event){
-		debugger;
-		console.log(event);
 		this.setState({
 			noticesItems: event.item.data,
 			activeFolder: event.item.name

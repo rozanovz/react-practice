@@ -20408,11 +20408,11 @@
 
 	var _home2 = _interopRequireDefault(_home);
 
-	var _main = __webpack_require__(265);
+	var _main = __webpack_require__(267);
 
 	var _main2 = _interopRequireDefault(_main);
 
-	var _notice = __webpack_require__(266);
+	var _notice = __webpack_require__(268);
 
 	var _notice2 = _interopRequireDefault(_notice);
 
@@ -20453,7 +20453,7 @@
 
 	var _directoriesList2 = _interopRequireDefault(_directoriesList);
 
-	var _noticesList = __webpack_require__(240);
+	var _noticesList = __webpack_require__(265);
 
 	var _noticesList2 = _interopRequireDefault(_noticesList);
 
@@ -20507,16 +20507,22 @@
 	    _react2.default.createElement(
 	      _reactRouter.Link,
 	      { to: '/notice/new' },
-	      _react2.default.createElement(_sidebarButton2.default, {
-	        glyphiconClass: 'glyphicon glyphicon-pencil',
-	        txt: 'Add Notice',
-	        action: 'ADD_NOTICE' })
+	      _react2.default.createElement(
+	        _sidebarButton2.default,
+	        {
+	          glyphiconClass: 'glyphicon glyphicon-pencil',
+	          txt: 'Add Notice',
+	          action: 'ADD_NOTICE' },
+	        'id=',
+	        props.params
+	      )
 	    ),
 	    _react2.default.createElement(_sidebarButton2.default, {
 	      glyphiconClass: 'glyphicon glyphicon-remove',
 	      txt: 'Remove',
-	      action: 'REMOVE_DIRECTORY',
-	      directoryId: props.params
+	      action: 'DELETE_DIRECTORY',
+	      directoryId: props.params,
+	      id: props.params
 	    })
 	  );
 	};
@@ -26372,7 +26378,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
 
 	var _constants = __webpack_require__(234);
@@ -26384,11 +26390,12 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = {
-		fireAction: function fireAction(action, item) {
-			(0, _dispatcher.dispatch)({
-				actionType: _constants2.default[action], item: item
-			});
-		}
+	  fireAction: function fireAction(action, item) {
+	    (0, _dispatcher.dispatch)({
+	      actionType: _constants2.default[action],
+	      item: item
+	    });
+	  }
 	};
 
 /***/ },
@@ -26398,23 +26405,25 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
 	exports.default = {
-		ADD_DIRECTORY: 'ADD_DIRECTORY',
-		REMOVE_DIRECTORY: 'REMOVE_DIRECTORY',
-		UPDATE_DIRECTORY: 'UPDATE_DIRECTORY',
-		DIRECTORY_ADDED: 'DIRECTORY_ADDED',
-		TOGGLE_DIR: 'TOGGLE_DIR',
-		HEADING_WILL_CHANGE: 'HEADING_WILL_CHANGE',
-		DIRECTORY_HEADING_WAS_CHANGED: 'DIRECTORY_HEADING_WAS_CHANGED',
+	  DIRECTORY_ADDED: 'DIRECTORY_ADDED',
+	  TOGGLE_DIR: 'TOGGLE_DIR',
+	  HEADING_WILL_CHANGE: 'HEADING_WILL_CHANGE',
+	  DIRECTORY_HEADING_WAS_CHANGED: 'DIRECTORY_HEADING_WAS_CHANGED',
 
-		ADD_NOTICE: 'ADD_NOTICE',
-		REMOVE_NOTICE: 'REMOVE_NOTICE',
-		UPDATE_NOTICE: 'UPDATE_NOTICE',
-		LOAD_NOTICE: 'LOAD_NOTICE',
-		LOAD_NOTICES: 'LOAD_NOTICES',
-		REMOVE_TAG: 'REMOVE_TAG'
+	  LOAD_NOTICES: 'LOAD_NOTICES',
+	  ADD_NOTICE: 'ADD_NOTICE',
+	  UPDATE_NOTICE: 'UPDATE_NOTICE',
+	  DELETE_NOTICE: 'DELETE_NOTICE',
+	  UPDATE_NOTICE_POSITION: 'UPDATE_NOTICE_POSITION',
+
+	  LOAD_DIRECTORIES: 'LOAD_DIRECTORIES',
+	  ADD_DIRECTORY: 'ADD_DIRECTORY',
+	  UPDATE_DIRECTORY: 'UPDATE_DIRECTORY',
+	  DELETE_DIRECTORY: 'DELETE_DIRECTORY',
+	  UPDATE_DIRECTORY_NAME: 'UPDATE_DIRECTORY_NAME'
 	};
 
 /***/ },
@@ -26424,7 +26433,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
 	exports.register = register;
 	exports.dispatch = dispatch;
@@ -26434,11 +26443,11 @@
 	var flux = new _flux.Dispatcher();
 
 	function register(callback) {
-		flux.register(callback);
+	  flux.register(callback);
 	}
 
 	function dispatch(actionType, action) {
-		flux.dispatch(actionType, action);
+	  flux.dispatch(actionType, action);
 	}
 
 /***/ },
@@ -26770,17 +26779,21 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _store = __webpack_require__(243);
+	var _store = __webpack_require__(240);
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _directorySingle = __webpack_require__(268);
+	var _directorySingle = __webpack_require__(263);
 
 	var _directorySingle2 = _interopRequireDefault(_directorySingle);
 
 	var _constants = __webpack_require__(234);
 
 	var _constants2 = _interopRequireDefault(_constants);
+
+	var _actions = __webpack_require__(233);
+
+	var _actions2 = _interopRequireDefault(_actions);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26799,28 +26812,27 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DirectoriesList).call(this, props));
 
 	    _this.state = { dirsList: [] };
+	    _this.createList = _this.createList.bind(_this);
 	    _this.created = _this.created.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(DirectoriesList, [{
-	    key: 'CreateList',
-	    value: function CreateList() {
-	      var _this2 = this;
-
-	      return _store2.default.getDirs().then(function (list) {
-	        _this2.setState({
-	          dirsList: list.map(function (key) {
-	            return _react2.default.createElement(_directorySingle2.default, {
-	              key: key.id,
-	              id: key.id,
-	              name: key.name,
-	              isSub: false,
-	              parent: true,
-	              subDirectories: key.children
-	            });
-	          })
-	        });
+	    key: 'createList',
+	    value: function createList(event) {
+	      console.log(event);
+	      this.setState({
+	        dirsList: event.item.data.map(function (key) {
+	          return _react2.default.createElement(_directorySingle2.default, {
+	            key: key.id,
+	            id: key.id,
+	            name: key.name,
+	            isSub: false,
+	            parent: true,
+	            parentId: key.parentId,
+	            subDirectories: key.children
+	          });
+	        })
 	      });
 	    }
 	  }, {
@@ -26832,12 +26844,18 @@
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
 	      _store2.default.addChangeListener(_constants2.default.DIRECTORY_ADDED, this.created);
-	      this.CreateList();
+	      _store2.default.addChangeListener(_constants2.default.LOAD_DIRECTORIES, this.createList);
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      _actions2.default.fireAction.bind(null, 'LOAD_DIRECTORIES', { data: [] })();
 	    }
 	  }, {
 	    key: 'componentWillUnmount',
 	    value: function componentWillUnmount() {
 	      _store2.default.removeChangeListener(_constants2.default.DIRECTORY_ADDED, this.created);
+	      _store2.default.removeChangeListener(_constants2.default.LOAD_DIRECTORIES, this.createList);
 	    }
 	  }, {
 	    key: 'render',
@@ -26870,267 +26888,10 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _noticeIcon = __webpack_require__(241);
-
-	var _noticeIcon2 = _interopRequireDefault(_noticeIcon);
-
-	var _store = __webpack_require__(243);
-
-	var _store2 = _interopRequireDefault(_store);
-
-	var _actions = __webpack_require__(233);
-
-	var _actions2 = _interopRequireDefault(_actions);
-
-	var _constants = __webpack_require__(234);
-
-	var _constants2 = _interopRequireDefault(_constants);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var NoticesList = function (_React$Component) {
-		_inherits(NoticesList, _React$Component);
-
-		function NoticesList(props) {
-			_classCallCheck(this, NoticesList);
-
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NoticesList).call(this, props));
-
-			console.log(props);
-			_this.state = {
-				noticesItems: [],
-				activeFolder: ''
-			};
-			_this.loadNotices = _this.loadNotices.bind(_this);
-			_this.dirNameChanged = _this.dirNameChanged.bind(_this);
-			return _this;
-		}
-
-		_createClass(NoticesList, [{
-			key: 'componentWillMount',
-			value: function componentWillMount() {
-				_store2.default.addChangeListener(_constants2.default.LOAD_NOTICES, this.loadNotices);
-				_store2.default.addChangeListener(_constants2.default.DIRECTORY_HEADING_WAS_CHANGED, this.dirNameChanged);
-			}
-		}, {
-			key: 'componentWillUnmount',
-			value: function componentWillUnmount() {
-				_store2.default.removeChangeListener(_constants2.default.LOAD_NOTICES, this.loadNotices);
-				_store2.default.addChangeListener(_constants2.default.DIRECTORY_HEADING_WAS_CHANGED, this.dirNameChanged);
-			}
-		}, {
-			key: 'dirNameChanged',
-			value: function dirNameChanged(event) {
-				if (this.props.folderId.directoryId == event.item.id) this.setState({ activeFolder: event.item.name });
-			}
-		}, {
-			key: 'loadNotices',
-			value: function loadNotices(event) {
-				debugger;
-				console.log(event);
-				this.setState({
-					noticesItems: event.item.data,
-					activeFolder: event.item.name
-				});
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var _this2 = this;
-
-				return _react2.default.createElement(
-					'div',
-					{ className: 'col-xs-3' },
-					_react2.default.createElement(
-						'h1',
-						null,
-						this.state.activeFolder
-					),
-					_react2.default.createElement(
-						'ul',
-						{ className: 'list-inline' },
-						this.state.noticesItems.map(function (notice) {
-							return notice.directoryId == _this2.props.folderId.directoryId ? _react2.default.createElement(_noticeIcon2.default, { key: notice.id, item: notice }) : null;
-						})
-					)
-				);
-			}
-		}]);
-
-		return NoticesList;
-	}(_react2.default.Component);
-
-	exports.default = NoticesList;
-	;
-
-/***/ },
-/* 241 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouter = __webpack_require__(171);
-
-	var _heading = __webpack_require__(242);
-
-	var _heading2 = _interopRequireDefault(_heading);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function (props) {
-	  return _react2.default.createElement(
-	    'li',
-	    { className: 'text-center' },
-	    _react2.default.createElement(
-	      _reactRouter.Link,
-	      { to: { pathname: '/notice/' + props.item.id, query: { directoryId: props.directoryId } } },
-	      _react2.default.createElement('h1', { className: 'glyphicon glyphicon-file' })
-	    ),
-	    _react2.default.createElement(
-	      'p',
-	      null,
-	      _react2.default.createElement(_heading2.default, { txt: props.item.title })
-	    )
-	  );
-	};
-
-/***/ },
-/* 242 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _actions = __webpack_require__(233);
-
-	var _actions2 = _interopRequireDefault(_actions);
-
-	var _store = __webpack_require__(243);
-
-	var _store2 = _interopRequireDefault(_store);
-
-	var _constants = __webpack_require__(234);
-
-	var _constants2 = _interopRequireDefault(_constants);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Heading = function (_React$Component) {
-	  _inherits(Heading, _React$Component);
-
-	  function Heading(props) {
-	    _classCallCheck(this, Heading);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Heading).call(this, props));
-
-	    _this.state = {
-	      name: props.txt,
-	      shouldBeViewed: false,
-	      id: _this.props.id,
-	      type: _this.props.type
-	    };
-	    _this.toggle = _this.toggle.bind(_this);
-	    _this.toggleOnEvent = _this.toggleOnEvent.bind(_this);
-	    _this.headingWillChange = _actions2.default.fireAction.bind(null, 'HEADING_WILL_CHANGE', { id: _this.state.id });
-	    return _this;
-	  }
-
-	  _createClass(Heading, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      _store2.default.addChangeListener(_constants2.default.HEADING_WILL_CHANGE, this.toggleOnEvent);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      _store2.default.removeChangeListener(_constants2.default.HEADING_WILL_CHANGE, this.toggleOnEvent);
-	    }
-	  }, {
-	    key: 'toggleOnEvent',
-	    value: function toggleOnEvent(event) {
-	      if (this.state.id !== event.item.id) this.setState({ shouldBeViewed: false });
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle(e) {
-	      if (parseInt(e.keyCode) === 13) {
-	        this.setState({ shouldBeViewed: !this.state.shouldBeViewed, name: e.target.value });
-	        _actions2.default.fireAction.bind(null, 'DIRECTORY_HEADING_WAS_CHANGED', { name: e.target.value, id: this.state.id })();
-	      } else if (e.type === 'click') {
-	        this.setState({ shouldBeViewed: !this.state.shouldBeViewed });
-	        this.headingWillChange();
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'span',
-	        null,
-	        _react2.default.createElement(
-	          'span',
-	          { onClick: this.toggle, style: { display: !this.state.shouldBeViewed ? 'block' : 'none' } },
-	          this.state.name
-	        ),
-	        _react2.default.createElement('input', { style: { display: this.state.shouldBeViewed ? 'block' : 'none' }, defaultValue: this.state.name, onKeyUp: this.toggle, type: 'text' })
-	      );
-	    }
-	  }]);
-
-	  return Heading;
-	}(_react2.default.Component);
-
-	exports.default = Heading;
-
-/***/ },
-/* 243 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _events = __webpack_require__(244);
+	var _events = __webpack_require__(241);
 
 	var _constants = __webpack_require__(234);
 
@@ -27138,114 +26899,99 @@
 
 	var _dispatcher = __webpack_require__(235);
 
-	var _axios = __webpack_require__(246);
+	var _noticesStore = __webpack_require__(242);
 
-	var _axios2 = _interopRequireDefault(_axios);
+	var _noticesStore2 = _interopRequireDefault(_noticesStore);
+
+	var _directoriesStore = __webpack_require__(262);
+
+	var _directoriesStore2 = _interopRequireDefault(_directoriesStore);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 	var NoticeStore = Object.assign(_events.EventEmitter.prototype, {
-		_maxListeners: Infinity,
+	  _maxListeners: Infinity,
 
-		emitChange: function emitChange(CHANGE_EVENT, params) {
-			this.emit(CHANGE_EVENT, params);
-		},
-		addChangeListener: function addChangeListener(CHANGE_EVENT, callback) {
-			this.on(CHANGE_EVENT, callback);
-		},
-		removeChangeListener: function removeChangeListener(CHANGE_EVENT, callback) {
-			this.removeListener(CHANGE_EVENT, callback);
-		},
-		getDirs: function getDirs() {
-			return _axios2.default.get('/directories').then(function (response) {
-				return NoticeStore.collect(response.data, response.data);
-			});
-		},
-		collect: function collect(arrToChange, originalArr) {
-			var _this = this;
-
-			arrToChange.forEach(function (key) {
-				key.children = [];
-				originalArr.forEach(function (ckey) {
-					if (key.id == ckey.parentId) {
-						key.children = [].concat(_toConsumableArray(key.children), [ckey]);
-					}
-				});
-				_this.collect(key.children, originalArr);
-			});
-			return [arrToChange[0]];
-		},
-		createDir: function createDir(id) {
-			return (0, _axios2.default)({
-				method: 'post',
-				url: '/directories',
-				data: {
-					parentId: id,
-					name: id + ' Flin'
-				}
-			}).then(function (res) {
-				console.log(res);
-				NoticeStore.emitChange('DIRECTORY_ADDED', res.data);
-			});
-		},
-		getNoticesById: function getNoticesById(params) {
-			return NoticeStore.notices.filter(function (notice) {
-				return notice.id === Number(params);
-			});
-		},
-		updateNotice: function updateNotice(notice) {
-			return NoticeStore.notices = NoticeStore.notices.filter(function (item) {
-				return item.id !== notice.id;
-			});
-		},
-		createNotice: function createNotice(action) {
-			return (0, _axios2.default)({
-				method: 'post',
-				url: '/notices',
-				data: {
-					directoryId: 2,
-					title: action.item.title,
-					description: action.description,
-					tags: action.item.tags
-				}
-			}).then(function (res) {
-				console.log(res);
-			});
-		},
+	  emitChange: function emitChange(CHANGE_EVENT, params) {
+	    this.emit(CHANGE_EVENT, params);
+	  },
+	  addChangeListener: function addChangeListener(CHANGE_EVENT, callback) {
+	    this.on(CHANGE_EVENT, callback);
+	  },
+	  removeChangeListener: function removeChangeListener(CHANGE_EVENT, callback) {
+	    this.removeListener(CHANGE_EVENT, callback);
+	  },
 
 
-		dispatcherIndex: (0, _dispatcher.register)(function (action) {
-			switch (action.actionType) {
-				case _constants2.default.LOAD_NOTICES:
-					return _axios2.default.get('/notices').then(function (response) {
-						action.item.data = response.data;
-						return NoticeStore.emitChange(action.actionType, action);
-					});
-					break;
+	  dispatcherIndex: (0, _dispatcher.register)(function (action) {
+	    switch (action.actionType) {
+	      case _constants2.default.LOAD_NOTICES:
+	        _noticesStore2.default.getNotices(action).then(function (res) {
+	          return NoticeStore.emitChange(res.actionType, res);
+	        });
+	        break;
+	      case _constants2.default.ADD_NOTICE:
+	        _noticesStore2.default.createNotice(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
+	      case _constants2.default.UPDATE_NOTICE:
+	        _noticesStore2.default.updateNotice(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
+	      case _constants2.default.DELETE_NOTICE:
+	        _noticesStore2.default.deleteNotice(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
+	      case _constants2.default.UPDATE_NOTICE_POSITION:
+	        _noticesStore2.default.updateNoticePosition(action).then(function (res) {
+	          return console.log(res);
+	        });
+	      case _constants2.default.UPDATE_NOTICE_NAME:
+	        _directoriesStore2.default.updateDirectoryName(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
 
-				case _constants2.default.ADD_NOTICE:
-					NoticeStore.createNotice(action);
-					break;
+	      case _constants2.default.LOAD_DIRECTORIES:
+	        _directoriesStore2.default.getDirs(action).then(function (res) {
+	          return NoticeStore.emitChange(res.actionType, res);
+	        });
+	        break;
+	      case _constants2.default.ADD_DIRECTORY:
+	        _directoriesStore2.default.createDir(action.item.id).then(function (res) {
+	          return NoticeStore.emitChange('DIRECTORY_ADDED', res.data);
+	        });
+	        break;
+	      case _constants2.default.UPDATE_DIRECTORY:
+	        _directoriesStore2.default.updateDirectory(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
+	      case _constants2.default.DELETE_DIRECTORY:
+	        _directoriesStore2.default.deleteDirectory(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
+	      case _constants2.default.UPDATE_DIRECTORY_NAME:
+	        _directoriesStore2.default.updateDirectoryName(action).then(function (res) {
+	          return console.log(res);
+	        });
+	        break;
 
-				case _constants2.default.UPDATE_NOTICE:
-					NoticeStore.updateNotice(action.item);
-					break;
-
-				case _constants2.default.ADD_DIRECTORY:
-					NoticeStore.createDir(action.item.id);
-					break;
-			}
-
-			NoticeStore.emitChange(action.actionType, action);
-		})
+	      default:
+	        NoticeStore.emitChange(action.actionType, action);
+	        break;
+	    };
+	  })
 	});
 
 	exports.default = NoticeStore;
 
 /***/ },
-/* 244 */
+/* 241 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -27519,28 +27265,102 @@
 	}
 
 /***/ },
-/* 245 */,
-/* 246 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(247);
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _axios = __webpack_require__(243);
+
+	var _axios2 = _interopRequireDefault(_axios);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var noticesStore = {
+	  createNotice: function createNotice(action) {
+	    return (0, _axios2.default)({
+	      method: 'post',
+	      url: '/notices',
+	      data: {
+	        directoryId: 2,
+	        title: action.item.title,
+	        description: action.description,
+	        tags: action.item.tags
+	      }
+	    });
+	  },
+	  updateNotice: function updateNotice(action) {
+	    return (0, _axios2.default)({
+	      method: 'put',
+	      url: '/notices/' + action.item.id,
+	      data: {
+	        // directoryId: 2,
+	        // title: action.item.title,
+	        // description: action.description,
+	        // tags: action.item.tags
+	      }
+	    });
+	  },
+	  updateNoticePosition: function updateNoticePosition(action) {
+	    return (0, _axios2.default)({
+	      method: 'put',
+	      url: '/notices/' + action.item.id,
+	      data: {
+	        // directoryId: 2,
+	        // title: action.item.title,
+	        // description: action.description,
+	        // tags: action.item.tags
+	      }
+	    });
+	  },
+	  deleteNotice: function deleteNotice(action) {
+	    return (0, _axios2.default)({
+	      method: 'put',
+	      url: '/notices/' + action.item.id,
+	      data: {
+	        // directoryId: 2,
+	        // title: action.item.title,
+	        // description: action.description,
+	        // tags: action.item.tags
+	      }
+	    });
+	  },
+	  getNotices: function getNotices(action) {
+	    return _axios2.default.get('/notices').then(function (response) {
+	      action.item.data = response.data;
+	      return action;
+	    });
+	  }
+	};
+
+	exports.default = noticesStore;
 
 /***/ },
-/* 247 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(248);
-	var utils = __webpack_require__(249);
-	var dispatchRequest = __webpack_require__(251);
-	var InterceptorManager = __webpack_require__(260);
-	var isAbsoluteURL = __webpack_require__(261);
-	var combineURLs = __webpack_require__(262);
-	var bind = __webpack_require__(263);
-	var transformData = __webpack_require__(255);
+	module.exports = __webpack_require__(244);
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var defaults = __webpack_require__(245);
+	var utils = __webpack_require__(246);
+	var dispatchRequest = __webpack_require__(248);
+	var InterceptorManager = __webpack_require__(257);
+	var isAbsoluteURL = __webpack_require__(258);
+	var combineURLs = __webpack_require__(259);
+	var bind = __webpack_require__(260);
+	var transformData = __webpack_require__(252);
 
 	function Axios(defaultConfig) {
 	  this.defaults = utils.merge({}, defaultConfig);
@@ -27618,7 +27438,7 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(264);
+	axios.spread = __webpack_require__(261);
 
 	// Provide aliases for supported request methods
 	utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
@@ -27645,13 +27465,13 @@
 	});
 
 /***/ },
-/* 248 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
-	var normalizeHeaderName = __webpack_require__(250);
+	var utils = __webpack_require__(246);
+	var normalizeHeaderName = __webpack_require__(247);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -27717,7 +27537,7 @@
 	};
 
 /***/ },
-/* 249 */
+/* 246 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -27997,12 +27817,12 @@
 	};
 
 /***/ },
-/* 250 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -28014,7 +27834,7 @@
 	};
 
 /***/ },
-/* 251 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -28037,10 +27857,10 @@
 	        adapter = config.adapter;
 	      } else if (typeof XMLHttpRequest !== 'undefined') {
 	        // For browsers use XHR adapter
-	        adapter = __webpack_require__(252);
+	        adapter = __webpack_require__(249);
 	      } else if (typeof process !== 'undefined') {
 	        // For node use HTTP adapter
-	        adapter = __webpack_require__(252);
+	        adapter = __webpack_require__(249);
 	      }
 
 	      if (typeof adapter === 'function') {
@@ -28054,18 +27874,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 252 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(249);
-	var buildURL = __webpack_require__(253);
-	var parseHeaders = __webpack_require__(254);
-	var transformData = __webpack_require__(255);
-	var isURLSameOrigin = __webpack_require__(256);
-	var btoa = typeof window !== 'undefined' && window.btoa || __webpack_require__(257);
-	var settle = __webpack_require__(258);
+	var utils = __webpack_require__(246);
+	var buildURL = __webpack_require__(250);
+	var parseHeaders = __webpack_require__(251);
+	var transformData = __webpack_require__(252);
+	var isURLSameOrigin = __webpack_require__(253);
+	var btoa = typeof window !== 'undefined' && window.btoa || __webpack_require__(254);
+	var settle = __webpack_require__(255);
 
 	module.exports = function xhrAdapter(resolve, reject, config) {
 	  var requestData = config.data;
@@ -28158,7 +27978,7 @@
 	  // This is only done if running in a standard browser environment.
 	  // Specifically not if we're in a web worker, or react-native.
 	  if (utils.isStandardBrowserEnv()) {
-	    var cookies = __webpack_require__(259);
+	    var cookies = __webpack_require__(256);
 
 	    // Add xsrf header
 	    var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ? cookies.read(config.xsrfCookieName) : undefined;
@@ -28216,12 +28036,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 253 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	function encode(val) {
 	  return encodeURIComponent(val).replace(/%40/gi, '@').replace(/%3A/gi, ':').replace(/%24/g, '$').replace(/%2C/gi, ',').replace(/%20/g, '+').replace(/%5B/gi, '[').replace(/%5D/gi, ']');
@@ -28282,12 +28102,12 @@
 	};
 
 /***/ },
-/* 254 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	/**
 	 * Parse headers into an object
@@ -28326,12 +28146,12 @@
 	};
 
 /***/ },
-/* 255 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	/**
 	 * Transform the data for a request or a response
@@ -28351,12 +28171,12 @@
 	};
 
 /***/ },
-/* 256 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	module.exports = utils.isStandardBrowserEnv() ?
 
@@ -28419,7 +28239,7 @@
 	}();
 
 /***/ },
-/* 257 */
+/* 254 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28459,7 +28279,7 @@
 	module.exports = btoa;
 
 /***/ },
-/* 258 */
+/* 255 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28483,12 +28303,12 @@
 	};
 
 /***/ },
-/* 259 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	module.exports = utils.isStandardBrowserEnv() ?
 
@@ -28541,12 +28361,12 @@
 	}();
 
 /***/ },
-/* 260 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(249);
+	var utils = __webpack_require__(246);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -28598,7 +28418,7 @@
 	module.exports = InterceptorManager;
 
 /***/ },
-/* 261 */
+/* 258 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28619,7 +28439,7 @@
 	};
 
 /***/ },
-/* 262 */
+/* 259 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28637,7 +28457,7 @@
 	};
 
 /***/ },
-/* 263 */
+/* 260 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28653,7 +28473,7 @@
 	};
 
 /***/ },
-/* 264 */
+/* 261 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28686,7 +28506,488 @@
 	};
 
 /***/ },
+/* 262 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _axios = __webpack_require__(243);
+
+	var _axios2 = _interopRequireDefault(_axios);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var directoriesStore = {
+	  collect: function collect(arrToChange, originalArr) {
+	    var _this = this;
+
+	    arrToChange.forEach(function (key) {
+	      key.children = [];
+	      originalArr.forEach(function (ckey) {
+	        if (key.id == ckey.parentId) {
+	          key.children = [].concat(_toConsumableArray(key.children), [ckey]);
+	          _this.collect(key.children, originalArr);
+	        }
+	      });
+	    });
+	    return [arrToChange[0]];
+	  },
+	  getDirs: function getDirs(action) {
+	    var _this2 = this;
+
+	    return _axios2.default.get('/directories').then(function (response) {
+	      action.item.data = _this2.collect(response.data, response.data);
+	      return action;
+	    });
+	  },
+	  createDir: function createDir(id) {
+	    return (0, _axios2.default)({
+	      method: 'post',
+	      url: '/directories',
+	      data: {
+	        parentId: id,
+	        name: id + ' Flin'
+	      }
+	    });
+	  },
+	  updateDirectory: function updateDirectory(action) {},
+	  deleteDirectory: function deleteDirectory(action) {
+	    if (action.item.id == 1) return 'root direcory can\'t be deleted';
+	    return (0, _axios2.default)({
+	      method: 'delete',
+	      url: '/directories/' + action.item.id
+	    });
+	  },
+	  updateDirectoryName: function updateDirectoryName(action) {
+	    return (0, _axios2.default)({
+	      method: 'put',
+	      url: '/directories/' + action.item.id,
+	      data: {
+	        'name': action.item.name,
+	        'id': action.item.id,
+	        'parentId': action.item.parentId
+	      }
+	    });
+	  }
+	};
+
+	exports.default = directoriesStore;
+
+/***/ },
+/* 263 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _reactRouter = __webpack_require__(171);
+
+	var _heading = __webpack_require__(264);
+
+	var _heading2 = _interopRequireDefault(_heading);
+
+	var _store = __webpack_require__(240);
+
+	var _store2 = _interopRequireDefault(_store);
+
+	var _actions = __webpack_require__(233);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
+	var _constants = __webpack_require__(234);
+
+	var _constants2 = _interopRequireDefault(_constants);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ulStyles = {
+	  listStyleType: 'none',
+	  paddingLeft: 25
+	};
+
+	var Directory = function (_React$Component) {
+	  _inherits(Directory, _React$Component);
+
+	  function Directory(props) {
+	    _classCallCheck(this, Directory);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Directory).call(this, props));
+
+	    _this.state = { subDirsView: false, shouldIExist: true };
+	    _this.isActive = _this.isActive.bind(_this);
+	    _this.makeAction = _this.makeAction.bind(_this);
+	    _this.createSubDirectoriesList = _this.createSubDirectoriesList.bind(_this);
+	    _this.removeComp = _this.removeComp.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(Directory, [{
+	    key: 'createSubDirectoriesList',
+	    value: function createSubDirectoriesList() {
+	      var list = this.props.subDirectories.map(function (sub) {
+	        return _react2.default.createElement(Directory, {
+	          key: sub.id,
+	          id: sub.id,
+	          name: sub.name,
+	          isSub: true,
+	          parent: true,
+	          parentId: sub.parentId,
+	          subDirectories: sub.children.length > 0 ? sub.children : null });
+	      });
+	      return _react2.default.createElement(
+	        'ul',
+	        { style: ulStyles },
+	        list
+	      );
+	    }
+	  }, {
+	    key: 'makeAction',
+	    value: function makeAction() {
+	      _actions2.default.fireAction.bind(null, 'TOGGLE_DIR', { state: this.state.subDirsView, id: this.props.id })();
+	      _actions2.default.fireAction.bind(null, 'LOAD_NOTICES', { id: this.props.id, name: this.props.name })();
+	    }
+	  }, {
+	    key: 'isActive',
+	    value: function isActive(event) {
+	      if (parseInt(event.item.id) == parseInt(this.props.id)) {
+	        this.setState({ subDirsView: !event.item.state });
+	      }
+	    }
+	  }, {
+	    key: 'removeComp',
+	    value: function removeComp(event) {
+	      if (event.item.id == this.props.id) this.setState({ shouldIExist: false });
+	    }
+	  }, {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      _store2.default.addChangeListener(_constants2.default.REMOVE_DIRECTORY, this.removeComp);
+	      _store2.default.addChangeListener(_constants2.default.TOGGLE_DIR, this.isActive);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      _store2.default.addChangeListener(_constants2.default.REMOVE_DIRECTORY, this.removeComp);
+	      _store2.default.removeChangeListener(_constants2.default.TOGGLE_DIR, this.isActive);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return this.state.shouldIExist ? _react2.default.createElement(
+	        'li',
+	        { key: this.props.id },
+	        _react2.default.createElement(
+	          'h4',
+	          null,
+	          _react2.default.createElement(_reactRouter.Link, {
+	            to: { pathname: "/", query: { directoryId: this.props.id } },
+	            className: 'glyphicon glyphicon-folder-close',
+	            activeClassName: 'glyphicon-folder-open',
+	            onClick: this.makeAction
+	          }),
+	          _react2.default.createElement(
+	            'span',
+	            null,
+	            _react2.default.createElement(_heading2.default, { txt: ' ' + this.props.name, id: this.props.id, parentId: this.props.parentId })
+	          )
+	        ),
+	        this.props.subDirectories ? _react2.default.createElement(
+	          'span',
+	          { style: { 'display': this.state.subDirsView ? 'inherit' : 'none' } },
+	          this.createSubDirectoriesList()
+	        ) : null
+	      ) : null;
+	    }
+	  }]);
+
+	  return Directory;
+	}(_react2.default.Component);
+
+	exports.default = Directory;
+
+/***/ },
+/* 264 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _actions = __webpack_require__(233);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
+	var _store = __webpack_require__(240);
+
+	var _store2 = _interopRequireDefault(_store);
+
+	var _constants = __webpack_require__(234);
+
+	var _constants2 = _interopRequireDefault(_constants);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Heading = function (_React$Component) {
+	  _inherits(Heading, _React$Component);
+
+	  function Heading(props) {
+	    _classCallCheck(this, Heading);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Heading).call(this, props));
+
+	    _this.state = {
+	      name: props.txt,
+	      shouldBeViewed: false,
+	      id: _this.props.id,
+	      type: _this.props.type,
+	      parentId: _this.props.parentId
+	    };
+	    _this.toggle = _this.toggle.bind(_this);
+	    _this.toggleOnEvent = _this.toggleOnEvent.bind(_this);
+	    _this.headingWillChange = _actions2.default.fireAction.bind(null, 'HEADING_WILL_CHANGE', { id: _this.state.id });
+	    return _this;
+	  }
+
+	  _createClass(Heading, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      _store2.default.addChangeListener(_constants2.default.HEADING_WILL_CHANGE, this.toggleOnEvent);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      _store2.default.removeChangeListener(_constants2.default.HEADING_WILL_CHANGE, this.toggleOnEvent);
+	    }
+	  }, {
+	    key: 'toggleOnEvent',
+	    value: function toggleOnEvent(event) {
+	      if (this.state.id !== event.item.id) this.setState({ shouldBeViewed: false });
+	    }
+	  }, {
+	    key: 'toggle',
+	    value: function toggle(e) {
+	      if (parseInt(e.keyCode) === 13) {
+	        this.setState({ shouldBeViewed: !this.state.shouldBeViewed, name: e.target.value });
+	        _actions2.default.fireAction.bind(null, 'UPDATE_DIRECTORY_NAME', { name: e.target.value, id: this.state.id, parentId: this.state.parentId })();
+	      } else if (e.type === 'click') {
+	        this.setState({ shouldBeViewed: !this.state.shouldBeViewed });
+	        this.headingWillChange();
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'span',
+	        { style: { paddingLeft: 10 } },
+	        _react2.default.createElement(
+	          'span',
+	          { onClick: this.toggle, style: { display: !this.state.shouldBeViewed ? 'inline-block' : 'none' } },
+	          this.state.name
+	        ),
+	        _react2.default.createElement('input', { style: { display: this.state.shouldBeViewed ? 'inline-block' : 'none' }, defaultValue: this.state.name, onKeyUp: this.toggle, type: 'text' })
+	      );
+	    }
+	  }]);
+
+	  return Heading;
+	}(_react2.default.Component);
+
+	exports.default = Heading;
+
+/***/ },
 /* 265 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _noticeIcon = __webpack_require__(266);
+
+	var _noticeIcon2 = _interopRequireDefault(_noticeIcon);
+
+	var _store = __webpack_require__(240);
+
+	var _store2 = _interopRequireDefault(_store);
+
+	var _actions = __webpack_require__(233);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
+	var _constants = __webpack_require__(234);
+
+	var _constants2 = _interopRequireDefault(_constants);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var NoticesList = function (_React$Component) {
+		_inherits(NoticesList, _React$Component);
+
+		function NoticesList(props) {
+			_classCallCheck(this, NoticesList);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NoticesList).call(this, props));
+
+			console.log(props);
+			_this.state = {
+				noticesItems: [],
+				activeFolder: ''
+			};
+			_this.loadNotices = _this.loadNotices.bind(_this);
+			_this.dirNameChanged = _this.dirNameChanged.bind(_this);
+			return _this;
+		}
+
+		_createClass(NoticesList, [{
+			key: 'componentWillMount',
+			value: function componentWillMount() {
+				_store2.default.addChangeListener(_constants2.default.LOAD_NOTICES, this.loadNotices);
+				_store2.default.addChangeListener(_constants2.default.DIRECTORY_HEADING_WAS_CHANGED, this.dirNameChanged);
+			}
+		}, {
+			key: 'componentWillUnmount',
+			value: function componentWillUnmount() {
+				_store2.default.removeChangeListener(_constants2.default.LOAD_NOTICES, this.loadNotices);
+				_store2.default.addChangeListener(_constants2.default.DIRECTORY_HEADING_WAS_CHANGED, this.dirNameChanged);
+			}
+		}, {
+			key: 'dirNameChanged',
+			value: function dirNameChanged(event) {
+				if (this.props.folderId.directoryId == event.item.id) this.setState({ activeFolder: event.item.name });
+			}
+		}, {
+			key: 'loadNotices',
+			value: function loadNotices(event) {
+				this.setState({
+					noticesItems: event.item.data,
+					activeFolder: event.item.name
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this2 = this;
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'col-xs-3' },
+					_react2.default.createElement(
+						'h1',
+						null,
+						this.state.activeFolder
+					),
+					_react2.default.createElement(
+						'ul',
+						{ className: 'list-inline' },
+						this.state.noticesItems.map(function (notice) {
+							return notice.directoryId == _this2.props.folderId.directoryId ? _react2.default.createElement(_noticeIcon2.default, { key: notice.id, item: notice }) : null;
+						})
+					)
+				);
+			}
+		}]);
+
+		return NoticesList;
+	}(_react2.default.Component);
+
+	exports.default = NoticesList;
+	;
+
+/***/ },
+/* 266 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(171);
+
+	var _heading = __webpack_require__(264);
+
+	var _heading2 = _interopRequireDefault(_heading);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (props) {
+	  return _react2.default.createElement(
+	    'li',
+	    { className: 'text-center' },
+	    _react2.default.createElement(
+	      _reactRouter.Link,
+	      { to: { pathname: '/notice/' + props.item.id, query: { directoryId: props.directoryId } } },
+	      _react2.default.createElement('h1', { className: 'glyphicon glyphicon-file' })
+	    ),
+	    _react2.default.createElement(
+	      'p',
+	      null,
+	      _react2.default.createElement(_heading2.default, { txt: props.item.title })
+	    )
+	  );
+	};
+
+/***/ },
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28742,7 +29043,7 @@
 	}(_react2.default.Component);
 
 /***/ },
-/* 266 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28759,7 +29060,7 @@
 
 	var _reactRouter = __webpack_require__(171);
 
-	var _store = __webpack_require__(243);
+	var _store = __webpack_require__(240);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -28771,7 +29072,7 @@
 
 	var _constants2 = _interopRequireDefault(_constants);
 
-	var _noticeTags = __webpack_require__(267);
+	var _noticeTags = __webpack_require__(269);
 
 	var _noticeTags2 = _interopRequireDefault(_noticeTags);
 
@@ -28929,7 +29230,7 @@
 	;
 
 /***/ },
-/* 267 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28965,155 +29266,6 @@
 	    " "
 	  );
 	};
-
-/***/ },
-/* 268 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(38);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _reactRouter = __webpack_require__(171);
-
-	var _heading = __webpack_require__(242);
-
-	var _heading2 = _interopRequireDefault(_heading);
-
-	var _store = __webpack_require__(243);
-
-	var _store2 = _interopRequireDefault(_store);
-
-	var _actions = __webpack_require__(233);
-
-	var _actions2 = _interopRequireDefault(_actions);
-
-	var _constants = __webpack_require__(234);
-
-	var _constants2 = _interopRequireDefault(_constants);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ulStyles = {
-	  listStyleType: 'none',
-	  paddingLeft: 25
-	};
-
-	var Directory = function (_React$Component) {
-	  _inherits(Directory, _React$Component);
-
-	  function Directory(props) {
-	    _classCallCheck(this, Directory);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Directory).call(this, props));
-
-	    _this.state = { subDirsView: false, shouldIExist: true };
-	    _this.isActive = _this.isActive.bind(_this);
-	    _this.makeAction = _this.makeAction.bind(_this);
-	    _this.createSubDirectoriesList = _this.createSubDirectoriesList.bind(_this);
-	    _this.removeComp = _this.removeComp.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(Directory, [{
-	    key: 'createSubDirectoriesList',
-	    value: function createSubDirectoriesList() {
-	      var list = this.props.subDirectories.map(function (sub) {
-	        return _react2.default.createElement(Directory, {
-	          key: sub.id,
-	          id: sub.id,
-	          name: sub.name,
-	          isSub: true,
-	          parent: true,
-	          subDirectories: sub.children.length > 0 ? sub.children : null });
-	      });
-	      return _react2.default.createElement(
-	        'ul',
-	        { style: ulStyles },
-	        list
-	      );
-	    }
-	  }, {
-	    key: 'makeAction',
-	    value: function makeAction() {
-	      _actions2.default.fireAction.bind(null, 'TOGGLE_DIR', { state: this.state.subDirsView, id: this.props.id })();
-	      _actions2.default.fireAction.bind(null, 'LOAD_NOTICES', { id: this.props.id, name: this.props.name })();
-	    }
-	  }, {
-	    key: 'isActive',
-	    value: function isActive(event) {
-	      if (parseInt(event.item.id) == parseInt(this.props.id)) {
-	        this.setState({ subDirsView: !event.item.state });
-	      }
-	    }
-	  }, {
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      _store2.default.addChangeListener(_constants2.default.REMOVE_DIRECTORY, this.removeComp);
-	      _store2.default.addChangeListener(_constants2.default.TOGGLE_DIR, this.isActive);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      _store2.default.addChangeListener(_constants2.default.REMOVE_DIRECTORY, this.removeComp);
-	      _store2.default.removeChangeListener(_constants2.default.TOGGLE_DIR, this.isActive);
-	    }
-	  }, {
-	    key: 'removeComp',
-	    value: function removeComp(event) {
-	      if (event.item.id == this.props.id) this.setState({ shouldIExist: false });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return this.state.shouldIExist ? _react2.default.createElement(
-	        'li',
-	        { key: this.props.id },
-	        _react2.default.createElement(
-	          'h4',
-	          null,
-	          _react2.default.createElement(_reactRouter.Link, {
-	            to: { pathname: "/", query: { directoryId: this.props.id } },
-	            className: 'glyphicon glyphicon-folder-close',
-	            activeClassName: 'glyphicon-folder-open',
-	            onClick: this.makeAction }),
-	          _react2.default.createElement(
-	            'span',
-	            null,
-	            _react2.default.createElement(_heading2.default, { txt: ' ' + this.props.name, id: this.props.id })
-	          )
-	        ),
-	        this.props.subDirectories ? _react2.default.createElement(
-	          'span',
-	          { style: { 'display': this.state.subDirsView ? 'inherit' : 'none' } },
-	          this.createSubDirectoriesList()
-	        ) : null
-	      ) : null;
-	    }
-	  }]);
-
-	  return Directory;
-	}(_react2.default.Component);
-
-	exports.default = Directory;
 
 /***/ }
 /******/ ]);

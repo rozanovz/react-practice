@@ -10,7 +10,8 @@ export default class Heading extends React.Component{
       name: props.txt,
       shouldBeViewed: false,
       id:this.props.id,
-      type: this.props.type
+      type: this.props.type,
+      parentId: this.props.parentId
     };
     this.toggle = this.toggle.bind(this);
     this.toggleOnEvent = this.toggleOnEvent.bind(this);
@@ -32,7 +33,7 @@ export default class Heading extends React.Component{
   toggle(e) {
     if(parseInt(e.keyCode) === 13){
       this.setState({shouldBeViewed: !this.state.shouldBeViewed, name:e.target.value});
-      AppActions.fireAction.bind(null, 'DIRECTORY_HEADING_WAS_CHANGED', {name: e.target.value, id: this.state.id})();
+      AppActions.fireAction.bind(null, 'UPDATE_DIRECTORY_NAME', {name: e.target.value, id: this.state.id, parentId: this.state.parentId})();
     }
     else if (e.type === 'click') {
       this.setState({shouldBeViewed: !this.state.shouldBeViewed});
@@ -42,9 +43,9 @@ export default class Heading extends React.Component{
 
   render() {
     return (
-      <span>
-        <span onClick={this.toggle} style={{display:!this.state.shouldBeViewed ? 'block' : 'none'}} >{this.state.name}</span>
-        <input style={{display:this.state.shouldBeViewed ? 'block' : 'none'}} defaultValue={this.state.name} onKeyUp={this.toggle} type="text"/>
+      <span style={{paddingLeft: 10}}>
+        <span onClick={this.toggle} style={{display:!this.state.shouldBeViewed ? 'inline-block' : 'none'}} >{this.state.name}</span>
+        <input style={{display:this.state.shouldBeViewed ? 'inline-block' : 'none'}} defaultValue={this.state.name} onKeyUp={this.toggle} type="text"/>
       </span>
     );
   }
