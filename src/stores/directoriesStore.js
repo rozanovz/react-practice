@@ -31,7 +31,6 @@ const directoriesStore = {
         name: `New Folder`
       }
     }).then(()=>{
-      let dirs;
       return directoriesStore.getDirs({item:{}}).then(res => res);
     });
   },
