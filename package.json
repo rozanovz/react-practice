@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Backend for React.js course",
   "scripts": {
-    "start": "concurrent --kill-others \"webpack -w\" \"node ./server\""
+    "start": "concurrent --kill-others \"webpack -w\" \"node ./server\"",
+    "build": "webpack"
   },
   "keywords": [
     "react",
