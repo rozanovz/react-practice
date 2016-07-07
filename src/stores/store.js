@@ -14,7 +14,10 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
   dispatcherIndex: register(function(action) {
     switch (action.actionType) {
       case AppConstants.LOAD_NOTICES:
-        noticesStore.getNotices(action).then(res => NoticeStore.emitChange(res.actionType, res));
+        noticesStore.getNotices(action).then(res => NoticeStore.emitChange(action.actionType, res));
+        break;
+      case AppConstants.LOAD_NOTICE_BY_ID:
+        noticesStore.getNoticeById(action).then(res => NoticeStore.emitChange(action.actionType, res));
         break;
       case AppConstants.ADD_NOTICE:
         noticesStore.createNotice(action).then(res => console.log(res));
@@ -25,26 +28,18 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
       case AppConstants.DELETE_NOTICE:
         noticesStore.deleteNotice(action).then(res => console.log(res));
         break;
-      case AppConstants.UPDATE_NOTICE_POSITION:
-        noticesStore.updateNoticePosition(action).then(res => console.log(res));
-      case AppConstants.UPDATE_NOTICE_NAME:
-        directoriesStore.updateDirectoryName(action).then(res => console.log(res));
-        break;
 
       case AppConstants.LOAD_DIRECTORIES:
-        directoriesStore.getDirs(action).then(res => NoticeStore.emitChange(res.actionType, res));
+        directoriesStore.getDirs(action).then(res => NoticeStore.emitChange(action.actionType, res));
         break;
       case AppConstants.ADD_DIRECTORY:
-        directoriesStore.createDir(action.item.id).then(res => NoticeStore.emitChange('DIRECTORY_ADDED', res.data));
+        directoriesStore.createDir(action.item.id).then(res => NoticeStore.emitChange(action.actionType, res));
         break;
       case AppConstants.UPDATE_DIRECTORY:
         directoriesStore.updateDirectory(action).then(res => console.log(res));
         break;
       case AppConstants.DELETE_DIRECTORY:
-        directoriesStore.deleteDirectory(action).then(res => console.log(res));
-        break;
-      case AppConstants.UPDATE_DIRECTORY_NAME:
-        directoriesStore.updateDirectoryName(action).then(res => console.log(res));
+        directoriesStore.deleteDirectory(action).then(res => NoticeStore.emitChange(action.actionType, res.data));
         break;
 
       default:

@@ -28,13 +28,12 @@ const directoriesStore = {
       url: '/directories',
       data: {
         parentId: id,
-        name: `${id} Flin`
+        name: `New Folder`
       }
+    }).then(()=>{
+      let dirs;
+      return directoriesStore.getDirs({item:{}}).then(res => res);
     });
-  },
-
-  updateDirectory(action) {
-
   },
 
   deleteDirectory(action) {
@@ -45,13 +44,13 @@ const directoriesStore = {
     })
   },
 
-  updateDirectoryName(action) {
+  updateDirectory(action) {
     return axios({
       method: 'put',
-      url: `/directories/${action.item.id}`,
+      url: `/directories/${action.item.data.id}`,
       data: {
-        'name': action.item.name,
-        'id': action.item.id,
+        'name': action.item.txt ? action.item.txt : action.item.data.name,
+        'id': action.item.data.id,
         'parentId': action.item.parentId
       }
     })

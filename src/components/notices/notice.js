@@ -8,26 +8,40 @@ import Tag from './notice-tags';
 export default class Notice extends React.Component {
 	constructor(props){
 		super(props);
-		this.notice = (this.props.params.id != 'new') ? NoticeStore.getNoticesById(this.props.params.id)[0] : {};
-
 		this.state = {
-			title: this.notice.title ? this.notice.title : '',
-			description: this.notice.description ? this.notice.description : '',
-			tags: this.notice.tags ? this.notice.tags : [],
+			title: '',
+			description: '',
+			tags: [],
 			isUpdated: false,
-			isNew: (this.props.params.id != 'new') ? false : true,
-			id: this.props.params.id,
+			isNew: true,
+			directoryId: props.location.state ? props.location.state.prevPath : ''
 		}
 
-		this.hasBeenUpdated = this.hasBeenUpdated.bind(this);
+		this.showButton = this.showButton.bind(this);
+		this.loadNotice = this.loadNotice.bind(this);
 		this.addTag = this.addTag.bind(this);
-		this.logNotice = this.logNotice.bind(this);
 		this.removeTag = this.removeTag.bind(this);
+		this.generateData = this.generateData.bind(this);
+		this.createUpdateNotice = this.createUpdateNotice.bind(this);
 	}
 
-	hasBeenUpdated(event){
+	showButton(event){
 		if(!this.state.isNew) this.setState({isUpdated: true});
 		if(event.keyCode !== 13) (event.target.id === 'title') ? this.setState({title:event.target.value}) : this.setState({description:event.target.value});
+	}
+
+	loadNotice(event){
+		this.setState({
+			title: event.item.data[0].title,
+			description: event.item.data[0].description,
+			tags: event.item.data[0].tags,
+			isUpdated: false,
+			isNew: false,
+			id: event.item.data[0].id,
+			directoryId: event.item.data[0].directoryId,
+		});
+		this.refs.title.value = this.state.title;
+		this.refs.description.value = this.state.description;
 	}
 
 	addTag(event) {
@@ -36,67 +50,84 @@ export default class Notice extends React.Component {
 				tags: [...this.state.tags, event.target.value],
 			});
 			event.target.value = "";
-			this.hasBeenUpdated(event);
+			this.showButton(event);
 		}
 	}
-
-	componentWillMount(){
-    NoticeStore.addChangeListener(AppConstants.REMOVE_TAG, this.removeTag);
-  }
-
-  componentWillUnmount(){
-    NoticeStore.removeChangeListener(AppConstants.REMOVE_TAG, this.removeTag);
-  }
 
 	removeTag(event){
 		let tags = this.state.tags;
 		tags.splice(tags.indexOf(event.item.tagName),1);
 		this.setState({tags: tags});
-		this.hasBeenUpdated(event);
+		this.showButton(event);
 	}
 
-	logNotice(){
+	generateData(id){
+		let data = {
+			'directoryId': this.state.directoryId,
+			'title': this.state.title,
+			'description': this.state.description,
+			'tags': this.state.tags
+		};
+		if(id){
+			data.id = this.state.id;
+			data.position = 1;
+			return data;
+		}else{
+			return data;
+		}
+	}
+
+	createUpdateNotice(){
 		if(this.props.params.id != 'new')
-			AppActions.fireAction.bind(null, 'UPDATE_NOTICE', {notice: this.state})();
+			AppActions.fireAction.bind(null, 'UPDATE_NOTICE', this.generateData(true))();
 		else
-			AppActions.fireAction.bind(null, 'ADD_NOTICE', {
-				'directoryId': 1,
-		        'title': this.state.title,
-		        'description': this.state.description,
-		        'tags': this.state.tags
-			})();
+			AppActions.fireAction.bind(null, 'ADD_NOTICE', this.generateData(false))();
+
 		hashHistory.push('/');
 	}
+
+	componentWillMount(){
+		NoticeStore.addChangeListener(AppConstants.LOAD_NOTICE_BY_ID, this.loadNotice);
+    NoticeStore.addChangeListener(AppConstants.REMOVE_TAG, this.removeTag);
+  }
+
+	componentDidMount(){
+		if(this.props.params.id !== 'new')
+			AppActions.fireAction.bind(null, 'LOAD_NOTICE_BY_ID', { 'id' : this.props.params.id })();
+	}
+
+  componentWillUnmount(){
+		NoticeStore.removeChangeListener(AppConstants.LOAD_NOTICE_BY_ID, this.loadNotice);
+    NoticeStore.removeChangeListener(AppConstants.REMOVE_TAG, this.removeTag);
+  }
 
 	render () {
 		return (
 			<div className="col-xs-6 col-xs-offset-3">
 				<dl className="dl-horizontal">
 					<dt> Title </dt>
-				  <dd>
-						<input className="form-control" id="title" type="text" defaultValue={this.state.title} onKeyDown={this.hasBeenUpdated}/>
+				  <dd style={{paddingBottom: 5}}>
+						<input className="form-control" id="title" type="text" ref="title" defaultValue={this.state.title} onKeyDown={this.showButton}/>
 					</dd>
 
 					<dt> Description </dt>
-					<dd>
-						<textarea className="form-control" id="description" type="text" rows="8" defaultValue={this.state.description} onKeyDown={this.hasBeenUpdated}/>
+					<dd style={{paddingBottom: 5}}>
+						<textarea className="form-control" id="description" type="text" ref="description" rows="8" defaultValue={this.state.description} onKeyDown={this.showButton} />
 					</dd>
 
 					<dt> Tags </dt>
-					<dd>
-						{this.state.tags.map((tag, i)=> <Tag id={i} tag={tag} key={i}/>)}
-						<input type="text" id="newTag" onKeyDown={this.addTag}/>
+					<dd style={{paddingBottom: 5}}>
+						{this.state.tags.map((tag, i)=> <Tag id={i} tag={tag} key={i} />)}
+						<input type="text" id="newTag" onKeyDown={this.addTag} />
 					</dd>
 
 					<dt>
-						<Link to="/">
-							<i className="glyphicon glyphicon-arrow-left"></i>
-						</Link>
+						<Link to="/" className="btn btn-primary"> <i className="glyphicon glyphicon-arrow-left"></i> </Link>
 					</dt>
-					<dd>
+					<dd style={{paddingBottom: 5}}>
 						{
 							(this.state.isUpdated || this.state.isNew)
-								? (<button className="btn btn-success" onClick={this.logNotice}>{this.state.isNew ? 'Create Notice' : 'Update Notice'}</button>)
+								? (<button className="btn btn-success" onClick={this.createUpdateNotice}>{this.state.isNew ? 'Create Notice' : 'Update Notice'}</button>)
 									: null
 						}
 					</dd>

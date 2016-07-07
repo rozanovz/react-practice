@@ -7,11 +7,8 @@ export default class Heading extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      name: props.txt,
       shouldBeViewed: false,
-      id:this.props.id,
-      type: this.props.type,
-      parentId: this.props.parentId
+      name: this.props.params.name ? this.props.params.name : this.props.params.item.title
     };
     this.toggle = this.toggle.bind(this);
     this.toggleOnEvent = this.toggleOnEvent.bind(this);
@@ -33,7 +30,7 @@ export default class Heading extends React.Component{
   toggle(e) {
     if(parseInt(e.keyCode) === 13){
       this.setState({shouldBeViewed: !this.state.shouldBeViewed, name:e.target.value});
-      AppActions.fireAction.bind(null, 'UPDATE_DIRECTORY_NAME', {name: e.target.value, id: this.state.id, parentId: this.state.parentId})();
+      AppActions.fireAction.bind(null, this.props.action, {txt: e.target.value, data: this.props.params})();
     }
     else if (e.type === 'click') {
       this.setState({shouldBeViewed: !this.state.shouldBeViewed});

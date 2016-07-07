@@ -6,30 +6,33 @@ import AppConstants from '../../constants/constants';
 export default (props) => {
   return (
   	<div className="col-xs-2 text-center">
-      <SidebarButton
-        glyphiconClass="glyphicon glyphicon-plus"
-        txt="Add Directory"
-        id={props.params}
-        action='ADD_DIRECTORY'>
-      </SidebarButton>
+      <div className="btn-group-vertical " role="group" style={{width: '100%'}}>
+        <a className="btn btn-primary text-center" type="button">
+          <SidebarButton
+            glyphiconClass="glyphicon glyphicon-plus"
+            txt="Add Directory"
+            id={props.params}
+            action='ADD_DIRECTORY'>
+          </SidebarButton>
+        </a>
 
-      <Link to="/notice/new">
-        <SidebarButton
-          glyphiconClass="glyphicon glyphicon-pencil"
-          txt="Add Notice"
-          action='ADD_NOTICE'>
-          id={props.params}
-        </SidebarButton>
-      </Link>
+        <Link to={{ pathname:'/notice/new', state: { prevPath: props.params } }} className="btn btn-primary text-center" type="button">
+          <SidebarButton
+            glyphiconClass="glyphicon glyphicon-pencil"
+            txt="Add Notice"
+            id={props.params}>
+          </SidebarButton>
+        </Link>
 
-      <SidebarButton
-        glyphiconClass="glyphicon glyphicon-remove"
-        txt="Remove"
-        action='DELETE_DIRECTORY'
-        directoryId={props.params}
-        id={props.params}
-        >
-      </SidebarButton>
+        <a className="btn btn-primary text-center" type="button">
+          <SidebarButton
+            glyphiconClass="glyphicon glyphicon-remove"
+            txt="Remove"
+            action='DELETE_DIRECTORY'
+            id={props.params}>
+          </SidebarButton>
+        </a>
+      </div>
     </div>
   );
 };

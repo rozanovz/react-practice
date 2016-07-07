@@ -5,7 +5,7 @@ import NoticesList from './notices/notices-list';
 
 export default (props) => {
 	return (
-		<div className="row">
+		<div>
 			<Sidebar params={props.location.query.directoryId}/>
 			<DirectoriesList />
 			<NoticesList folderId={props.location.query}/>

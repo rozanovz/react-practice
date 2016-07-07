@@ -9,31 +9,16 @@ export default class DirectoriesList extends React.Component{
     super(props)
     this.state = {dirsList:[]};
     this.createList = this.createList.bind(this);
-    this.created = this.created.bind(this);
   }
 
   createList (event){
-    console.log(event);
     this.setState({
       dirsList: event.item.data
-          .map( key => <Directory
-            key={key.id}
-            id={key.id}
-            name={key.name}
-            isSub={false}
-            parent={true}
-            parentId={ key.parentId }
-            subDirectories={key.children}
-          /> )
     });
   }
 
-  created(event){
-    console.log(event);
-  }
-
   componentWillMount(){
-    NoticeStore.addChangeListener(AppConstants.DIRECTORY_ADDED, this.created);
+    NoticeStore.addChangeListener(AppConstants.ADD_DIRECTORY, this.createList);
     NoticeStore.addChangeListener(AppConstants.LOAD_DIRECTORIES, this.createList);
   }
 
@@ -42,16 +27,23 @@ export default class DirectoriesList extends React.Component{
   }
 
   componentWillUnmount(){
-    NoticeStore.removeChangeListener(AppConstants.DIRECTORY_ADDED, this.created);
+    NoticeStore.removeChangeListener(AppConstants.ADD_DIRECTORY, this.createList);
     NoticeStore.removeChangeListener(AppConstants.LOAD_DIRECTORIES, this.createList);
   }
 
 	render(){
     return (
-      <div className="col-xs-3" style={{border:'1px solid'}}>
-        <div className="col-xs-12">
+      <div className="col-xs-3">
+        <div className="row">
           <ul className="list-unstyled">
-            { this.state.dirsList }
+            { this.state.dirsList.map( key => <Directory
+                key={key.id}
+                id={key.id}
+                name={key.name}
+                isSub={false}
+                parent={true}
+                parentId={ key.parentId }
+                children={key.children} /> ) }
           </ul>
         </div>
       </div>
