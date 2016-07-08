@@ -7,13 +7,19 @@ import AppActions from '../../actions/actions';
 export default class DirectoriesList extends React.Component{
   constructor(props){
     super(props)
-    this.state = {dirsList:[]};
+    this.state = { dirsList:[] };
     this.createList = this.createList.bind(this);
   }
 
   createList (event){
     this.setState({
-      dirsList: event.item.data
+      dirsList: event.item.data.map( key => <Directory
+          key={ key.id }
+          id={ key.id }
+          name={ key.name }
+          isSub={ false }
+          parentId={ key.parentId }
+          children={ key.children } /> )
     });
   }
 
@@ -36,14 +42,7 @@ export default class DirectoriesList extends React.Component{
       <div className="col-xs-3">
         <div className="row">
           <ul className="list-unstyled">
-            { this.state.dirsList.map( key => <Directory
-                key={key.id}
-                id={key.id}
-                name={key.name}
-                isSub={false}
-                parent={true}
-                parentId={ key.parentId }
-                children={key.children} /> ) }
+            { this.state.dirsList }
           </ul>
         </div>
       </div>

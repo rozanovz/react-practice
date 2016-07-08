@@ -3,7 +3,8 @@ import { Link } from 'react-router'
 import SidebarButton from './sidebar-button';
 import AppConstants from '../../constants/constants';
 
-export default (props) => {
+const Sidebar = (props) => {
+  let id = props.params ? props.params : '1';
   return (
   	<div className="col-xs-2 text-center">
       <div className="btn-group-vertical " role="group" style={{width: '100%'}}>
@@ -11,16 +12,16 @@ export default (props) => {
           <SidebarButton
             glyphiconClass="glyphicon glyphicon-plus"
             txt="Add Directory"
-            id={props.params}
+            id={id}
             action='ADD_DIRECTORY'>
           </SidebarButton>
         </a>
 
-        <Link to={{ pathname:'/notice/new', state: { prevPath: props.params } }} className="btn btn-primary text-center" type="button">
+        <Link to={{ pathname:'/notice/new', state: { prevPath: id } }} className="btn btn-primary text-center" type="button">
           <SidebarButton
             glyphiconClass="glyphicon glyphicon-pencil"
             txt="Add Notice"
-            id={props.params}>
+            id={id}>
           </SidebarButton>
         </Link>
 
@@ -29,10 +30,13 @@ export default (props) => {
             glyphiconClass="glyphicon glyphicon-remove"
             txt="Remove"
             action='DELETE_DIRECTORY'
-            id={props.params}>
+            id={id}>
           </SidebarButton>
         </a>
       </div>
     </div>
   );
 };
+
+export default Sidebar;
+Sidebar.propTypes = { params: React.PropTypes.string };

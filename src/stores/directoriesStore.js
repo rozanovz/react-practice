@@ -35,25 +35,26 @@ const directoriesStore = {
     });
   },
 
+  updateDirectory(action) {
+    console.log(action.item);
+    return axios({
+      method: 'put',
+      url: `/directories/${action.item.id}`,
+      data: {
+        'name': action.item.name,
+        'id': action.item.id,
+        'parentId': action.item.parentId
+      }
+    })
+  },
+
   deleteDirectory(action) {
-    if(action.item.id == 1) return `root direcory can't be deleted`;
+    if(action.item.id == 1) return `root direcory can not be deleted`;
     return axios({
       method: 'delete',
       url: `/directories/${action.item.id}`
     })
   },
-
-  updateDirectory(action) {
-    return axios({
-      method: 'put',
-      url: `/directories/${action.item.data.id}`,
-      data: {
-        'name': action.item.txt ? action.item.txt : action.item.data.name,
-        'id': action.item.data.id,
-        'parentId': action.item.parentId
-      }
-    })
-  }
 };
 
 export default directoriesStore;

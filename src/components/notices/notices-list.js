@@ -26,7 +26,7 @@ export default class NoticesList extends React.Component {
 	}
 
 	dirNameChanged(event) {
-		if(this.props.folderId.directoryId == event.item.id)
+		if(this.props.folderId == event.item.id)
 			this.setState({activeFolder: event.item.name});
 	}
 
@@ -42,9 +42,11 @@ export default class NoticesList extends React.Component {
 			<div className="col-xs-3">
 				<h1>{this.state.activeFolder}</h1>
 				<ul className="list-inline">
-					{this.state.noticesItems.map(notice => notice.directoryId == this.props.folderId.directoryId ? <NoticeIcon key={notice.id} item={notice} /> : null)}
+					{this.state.noticesItems.map(notice => notice.directoryId == this.props.folderId ? <NoticeIcon key={notice.id} item={notice} /> : null)}
 				</ul>
 			</div>
 		);
 	}
 };
+
+NoticesList.propTypes = { folderId: React.PropTypes.string };

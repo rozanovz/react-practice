@@ -136,3 +136,9 @@ export default class Notice extends React.Component {
 		);
 	}
 };
+
+Notice.propTypes = {
+	params: React.PropTypes.shape({
+		id: React.PropTypes.string
+	})
+};

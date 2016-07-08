@@ -29,17 +29,16 @@ const noticesStore = {
   },
 
   updateNotice(action) {
-    if(action.item.txt) action.item.data.item.title = action.item.txt;
     return axios({
       method: 'put',
-      url: `/notices/${action.item.id ? action.item.id : action.item.data.item.id}`,
+      url: `/notices/${action.item.id}`,
       data: {
-        position:    action.item.position    ? action.item.position    : action.item.data.item.position   ,
-        directoryId: action.item.directoryId ? action.item.directoryId : action.item.data.item.directoryId,
-        title:       action.item.title       ? action.item.title       : action.item.data.item.title      ,
-        description: action.item.description ? action.item.description : action.item.data.item.description,
-        tags:        action.item.tags        ? action.item.tags        : action.item.data.item.tags       ,
-        id:          action.item.id          ? action.item.id          : action.item.data.item.id
+        position: action.item.position,
+        directoryId: action.item.directoryId,
+        title: action.item.title,
+        description: action.item.description,
+        tags: action.item.tags,
+        id: action.item.id
       }
     })
   },
