@@ -5,6 +5,14 @@ import AppActions from '../../actions/actions';
 import AppConstants from '../../constants/constants';
 import Tag from './notice-tags';
 
+let newTagStyles = {
+	width: '20%',
+	height: '22.5px',
+	verticalAlign: 'middle',
+	borderRadius: '.25em',
+	border: '1px solid #ccc'
+}
+
 export default class Notice extends React.Component {
 	constructor(props){
 		super(props);
@@ -112,17 +120,17 @@ export default class Notice extends React.Component {
 
 					<dt> Description </dt>
 					<dd style={{paddingBottom: 5}}>
-						<textarea className="form-control" id="description" type="text" ref="description" rows="8" defaultValue={this.state.description} onKeyDown={this.showButton} />
+						<textarea className="form-control" id="description" type="text" ref="description" rows="8" defaultValue={this.state.description} onKeyDown={this.showButton} style={{resize: 'none'}}/>
 					</dd>
 
 					<dt> Tags </dt>
 					<dd style={{paddingBottom: 5}}>
 						{this.state.tags.map((tag, i)=> <Tag id={i} tag={tag} key={i} />)}
-						<input type="text" id="newTag" onKeyDown={this.addTag} />
+						<input type="text" id="newTag" onKeyDown={this.addTag} style={newTagStyles}/>
 					</dd>
 
 					<dt>
-						<Link to="/" className="btn btn-primary"> <i className="glyphicon glyphicon-arrow-left"></i> </Link>
+						<Link to="/" className="btn btn-primary btn-circle"> <i className="glyphicon glyphicon-arrow-left"></i> </Link>
 					</dt>
 					<dd style={{paddingBottom: 5}}>
 						{

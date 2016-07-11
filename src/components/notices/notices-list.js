@@ -39,8 +39,8 @@ export default class NoticesList extends React.Component {
 
 	render () {
 		return (
-			<div className="col-xs-3">
-				<h1>{this.state.activeFolder}</h1>
+			<div className="col-xs-5">
+				<h1 style={{marginTop: 0}}>{this.state.activeFolder}</h1>
 				<ul className="list-inline">
 					{this.state.noticesItems.map(notice => notice.directoryId == this.props.folderId ? <NoticeIcon key={notice.id} item={notice} /> : null)}
 				</ul>

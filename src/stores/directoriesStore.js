@@ -36,7 +36,6 @@ const directoriesStore = {
   },
 
   updateDirectory(action) {
-    console.log(action.item);
     return axios({
       method: 'put',
       url: `/directories/${action.item.id}`,

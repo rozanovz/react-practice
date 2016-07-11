@@ -6,12 +6,6 @@ export class Main extends React.Component {
 		super();
 	}
 	render () {
-		return (
-			<div className="container-fluid">
-				<div className="row">
-					<Home />
-				</div>
-			</div>
-		);
+		return <Home />
 	}
 }

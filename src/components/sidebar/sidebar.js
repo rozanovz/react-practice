@@ -28,7 +28,7 @@ const Sidebar = (props) => {
         <a className="btn btn-primary text-center" type="button">
           <SidebarButton
             glyphiconClass="glyphicon glyphicon-remove"
-            txt="Remove"
+            txt="Remove Directory"
             action='DELETE_DIRECTORY'
             id={id}>
           </SidebarButton>

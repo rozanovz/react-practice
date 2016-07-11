@@ -20,14 +20,15 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
         noticesStore.getNoticeById(action).then(res => NoticeStore.emitChange(action.actionType, res));
         break;
       case AppConstants.ADD_NOTICE:
-        noticesStore.createNotice(action).then(res => console.log(res));
+        noticesStore.createNotice(action)/*.then(res => console.log(res))*/;
         break;
       case AppConstants.UPDATE_NOTICE:
-        noticesStore.updateNotice(action).then(res => console.log(res));
+        noticesStore.updateNotice(action)/*.then(res => console.log(res))*/;
         break;
       case AppConstants.DELETE_NOTICE:
-        noticesStore.deleteNotice(action).then(res => console.log(res));
+        noticesStore.deleteNotice(action).then(res => NoticeStore.emitChange(action.actionType, res.data));
         break;
+
 
       case AppConstants.LOAD_DIRECTORIES:
         directoriesStore.getDirs(action).then(res => NoticeStore.emitChange(action.actionType, res));
@@ -36,7 +37,7 @@ const NoticeStore = Object.assign(EventEmitter.prototype, {
         directoriesStore.createDir(action.item.id).then(res => NoticeStore.emitChange(action.actionType, res));
         break;
       case AppConstants.UPDATE_DIRECTORY:
-        directoriesStore.updateDirectory(action).then(res => console.log(res));
+        directoriesStore.updateDirectory(action)/*.then(res => console.log(res))*/;
         break;
       case AppConstants.DELETE_DIRECTORY:
         directoriesStore.deleteDirectory(action).then(res => NoticeStore.emitChange(action.actionType, res.data));

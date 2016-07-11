@@ -23,16 +23,17 @@ class Directory extends React.Component {
 	}
 
   createchildrenList(){
-    let list = this.props.children.map((sub)=>{
-      return <Directory
-        key={ sub.id }
-        id={ sub.id }
-        name={ sub.name }
-        isSub={ true }
-        parentId={ sub.parentId }
-        children={ sub.children.length > 0 ? sub.children : null }/>
-    })
-    return <ul style={ ulStyles }>{ list }</ul>;
+    return (<ul style={ ulStyles }>
+      {this.props.children.map((sub)=>{
+        return <Directory
+          key={ sub.id }
+          id={ sub.id }
+          name={ sub.name }
+          isSub={ true }
+          parentId={ sub.parentId }
+          children={ sub.children.length > 0 ? sub.children : null }/>
+      })}
+    </ul>);
   }
 
   makeAction(){

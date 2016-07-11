@@ -58,7 +58,9 @@ export default class Heading extends React.Component{
   render() {
     return (
       <span style={{paddingLeft: 10}}>
-        <span onClick={this.toggle} style={{display:!this.state.shouldBeViewed ? 'inline-block' : 'none'}} >{this.state.name}</span>
+        <span onClick={this.toggle} style={{display:!this.state.shouldBeViewed ? 'inline-block' : 'none'}} >
+          <strong>{this.state.name}</strong>
+        </span>
         <input style={{display:this.state.shouldBeViewed ? 'inline-block' : 'none'}} defaultValue={this.state.name} onKeyUp={this.toggle} type="text"/>
       </span>
     );

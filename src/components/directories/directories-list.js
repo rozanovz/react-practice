@@ -39,7 +39,7 @@ export default class DirectoriesList extends React.Component{
 
 	render(){
     return (
-      <div className="col-xs-3">
+      <div className="col-xs-5">
         <div className="row">
           <ul className="list-unstyled">
             { this.state.dirsList }

@@ -20457,15 +20457,32 @@
 
 	var _noticesList2 = _interopRequireDefault(_noticesList);
 
+	var _navBar = __webpack_require__(271);
+
+	var _navBar2 = _interopRequireDefault(_navBar);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var Home = function Home(props) {
 		return _react2.default.createElement(
 			'div',
 			null,
-			_react2.default.createElement(_sidebar2.default, { params: props.location.query.directoryId }),
-			_react2.default.createElement(_directoriesList2.default, null),
-			_react2.default.createElement(_noticesList2.default, { folderId: props.location.query.directoryId })
+			_react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(_navBar2.default, null)
+			),
+			_react2.default.createElement(
+				'div',
+				{ className: 'container' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'row' },
+					_react2.default.createElement(_sidebar2.default, { params: props.location.query.directoryId }),
+					_react2.default.createElement(_directoriesList2.default, null),
+					_react2.default.createElement(_noticesList2.default, { folderId: props.location.query.directoryId })
+				)
+			)
 		);
 	};
 	exports.default = Home;
@@ -20529,7 +20546,7 @@
 	        { className: 'btn btn-primary text-center', type: 'button' },
 	        _react2.default.createElement(_sidebarButton2.default, {
 	          glyphiconClass: 'glyphicon glyphicon-remove',
-	          txt: 'Remove',
+	          txt: 'Remove Directory',
 	          action: 'DELETE_DIRECTORY',
 	          id: id })
 	      )
@@ -26360,11 +26377,18 @@
 
 	var SidebarButton = function SidebarButton(props) {
 
+	  var fireAction = function fireAction() {
+
+	    if (props.action == 'DELETE_DIRECTORY') {
+	      if (window.confirm("Do you really want to delete this directory? this will delete all notices and directories in it too.")) return _actions2.default.fireAction.bind(null, props.action, { id: props.id, txt: props.txt })();
+	    } else return _actions2.default.fireAction.bind(null, props.action, { id: props.id, txt: props.txt })();
+	  };
+
 	  return _react2.default.createElement(
 	    'div',
-	    { onClick: _actions2.default.fireAction.bind(null, props.action, { id: props.id, txt: props.txt }) },
+	    { onClick: fireAction },
 	    _react2.default.createElement('i', { className: props.glyphiconClass }),
-	    _react2.default.createElement('br', null),
+	    " ",
 	    _react2.default.createElement(
 	      'span',
 	      null,
@@ -26862,7 +26886,7 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { className: 'col-xs-3' },
+	        { className: 'col-xs-5' },
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'row' },
@@ -26936,18 +26960,14 @@
 	        });
 	        break;
 	      case _constants2.default.ADD_NOTICE:
-	        _noticesStore2.default.createNotice(action).then(function (res) {
-	          return console.log(res);
-	        });
+	        _noticesStore2.default.createNotice(action) /*.then(res => console.log(res))*/;
 	        break;
 	      case _constants2.default.UPDATE_NOTICE:
-	        _noticesStore2.default.updateNotice(action).then(function (res) {
-	          return console.log(res);
-	        });
+	        _noticesStore2.default.updateNotice(action) /*.then(res => console.log(res))*/;
 	        break;
 	      case _constants2.default.DELETE_NOTICE:
 	        _noticesStore2.default.deleteNotice(action).then(function (res) {
-	          return console.log(res);
+	          return NoticeStore.emitChange(action.actionType, res.data);
 	        });
 	        break;
 
@@ -26962,9 +26982,7 @@
 	        });
 	        break;
 	      case _constants2.default.UPDATE_DIRECTORY:
-	        _directoriesStore2.default.updateDirectory(action).then(function (res) {
-	          return console.log(res);
-	        });
+	        _directoriesStore2.default.updateDirectory(action) /*.then(res => console.log(res))*/;
 	        break;
 	      case _constants2.default.DELETE_DIRECTORY:
 	        _directoriesStore2.default.deleteDirectory(action).then(function (res) {
@@ -28544,7 +28562,6 @@
 	    });
 	  },
 	  updateDirectory: function updateDirectory(action) {
-	    console.log(action.item);
 	    return (0, _axios2.default)({
 	      method: 'put',
 	      url: '/directories/' + action.item.id,
@@ -28637,19 +28654,18 @@
 	  _createClass(Directory, [{
 	    key: 'createchildrenList',
 	    value: function createchildrenList() {
-	      var list = this.props.children.map(function (sub) {
-	        return _react2.default.createElement(Directory, {
-	          key: sub.id,
-	          id: sub.id,
-	          name: sub.name,
-	          isSub: true,
-	          parentId: sub.parentId,
-	          children: sub.children.length > 0 ? sub.children : null });
-	      });
 	      return _react2.default.createElement(
 	        'ul',
 	        { style: ulStyles },
-	        list
+	        this.props.children.map(function (sub) {
+	          return _react2.default.createElement(Directory, {
+	            key: sub.id,
+	            id: sub.id,
+	            name: sub.name,
+	            isSub: true,
+	            parentId: sub.parentId,
+	            children: sub.children.length > 0 ? sub.children : null });
+	        })
 	      );
 	    }
 	  }, {
@@ -28828,7 +28844,11 @@
 	        _react2.default.createElement(
 	          'span',
 	          { onClick: this.toggle, style: { display: !this.state.shouldBeViewed ? 'inline-block' : 'none' } },
-	          this.state.name
+	          _react2.default.createElement(
+	            'strong',
+	            null,
+	            this.state.name
+	          )
 	        ),
 	        _react2.default.createElement('input', { style: { display: this.state.shouldBeViewed ? 'inline-block' : 'none' }, defaultValue: this.state.name, onKeyUp: this.toggle, type: 'text' })
 	      );
@@ -28946,10 +28966,10 @@
 
 				return _react2.default.createElement(
 					'div',
-					{ className: 'col-xs-3' },
+					{ className: 'col-xs-5' },
 					_react2.default.createElement(
 						'h1',
-						null,
+						{ style: { marginTop: 0 } },
 						this.state.activeFolder
 					),
 					_react2.default.createElement(
@@ -28981,6 +29001,8 @@
 	  value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -28995,29 +29017,79 @@
 
 	var _noticeRemoveIcon2 = _interopRequireDefault(_noticeRemoveIcon);
 
+	var _constants = __webpack_require__(234);
+
+	var _constants2 = _interopRequireDefault(_constants);
+
+	var _store = __webpack_require__(240);
+
+	var _store2 = _interopRequireDefault(_store);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var NoticeIcon = function NoticeIcon(props) {
-	  return _react2.default.createElement(
-	    'li',
-	    { className: 'text-center' },
-	    _react2.default.createElement(
-	      'sup',
-	      { style: { top: '-2.5em', cursor: 'pointer' } },
-	      _react2.default.createElement(_noticeRemoveIcon2.default, { id: props.item.id })
-	    ),
-	    _react2.default.createElement(
-	      _reactRouter.Link,
-	      { to: { pathname: '/notice/' + props.item.id, state: { directoryId: props.directoryId } } },
-	      _react2.default.createElement('h1', { className: 'glyphicon glyphicon-file' })
-	    ),
-	    _react2.default.createElement(
-	      'p',
-	      null,
-	      _react2.default.createElement(_heading2.default, { params: props.item, action: 'UPDATE_NOTICE' })
-	    )
-	  );
-	};
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/* const NoticeIcon = (props) => */
+	var NoticeIcon = function (_React$Component) {
+	  _inherits(NoticeIcon, _React$Component);
+
+	  function NoticeIcon(props) {
+	    _classCallCheck(this, NoticeIcon);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NoticeIcon).call(this, props));
+
+	    _this.state = { show: true };
+	    _this.removeNotice = _this.removeNotice.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(NoticeIcon, [{
+	    key: 'removeNotice',
+	    value: function removeNotice(event) {
+	      if (event.id == this.props.item.id) this.setState({ show: false });
+	    }
+	  }, {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      _store2.default.addChangeListener(_constants2.default.DELETE_NOTICE, this.removeNotice);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      _store2.default.removeChangeListener(_constants2.default.DELETE_NOTICE, this.removeNotice);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return this.state.show ? _react2.default.createElement(
+	        'li',
+	        { className: 'text-center' },
+	        _react2.default.createElement(
+	          'sup',
+	          { style: { top: '-2.5em', cursor: 'pointer' } },
+	          _react2.default.createElement(_noticeRemoveIcon2.default, { id: this.props.item.id })
+	        ),
+	        _react2.default.createElement(
+	          _reactRouter.Link,
+	          { to: { pathname: '/notice/' + this.props.item.id, state: { directoryId: this.props.directoryId } } },
+	          _react2.default.createElement('h1', { className: 'glyphicon glyphicon-file' })
+	        ),
+	        _react2.default.createElement(
+	          'p',
+	          null,
+	          _react2.default.createElement(_heading2.default, { params: this.props.item, action: 'UPDATE_NOTICE' })
+	        )
+	      ) : null;
+	    }
+	  }]);
+
+	  return NoticeIcon;
+	}(_react2.default.Component);
+
 	exports.default = NoticeIcon;
 
 
@@ -29056,7 +29128,7 @@
 	  return _react2.default.createElement(
 	    'a',
 	    null,
-	    _react2.default.createElement('i', { className: 'glyphicon glyphicon-remove-circle', onClick: _actions2.default.fireAction.bind(null, 'DELETE_NOTICE', { id: props.id }) })
+	    _react2.default.createElement('i', { className: 'glyphicon glyphicon-remove-circle text-danger', onClick: _actions2.default.fireAction.bind(null, 'DELETE_NOTICE', { id: props.id }) })
 	  );
 	};
 	exports.default = RemoveIcon;
@@ -29107,15 +29179,7 @@
 		_createClass(Main, [{
 			key: 'render',
 			value: function render() {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'container-fluid' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'row' },
-						_react2.default.createElement(_home2.default, null)
-					)
-				);
+				return _react2.default.createElement(_home2.default, null);
 			}
 		}]);
 
@@ -29165,6 +29229,14 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var newTagStyles = {
+		width: '20%',
+		height: '22.5px',
+		verticalAlign: 'middle',
+		borderRadius: '.25em',
+		border: '1px solid #ccc'
+	};
 
 	var Notice = function (_React$Component) {
 		_inherits(Notice, _React$Component);
@@ -29300,7 +29372,7 @@
 						_react2.default.createElement(
 							'dd',
 							{ style: { paddingBottom: 5 } },
-							_react2.default.createElement('textarea', { className: 'form-control', id: 'description', type: 'text', ref: 'description', rows: '8', defaultValue: this.state.description, onKeyDown: this.showButton })
+							_react2.default.createElement('textarea', { className: 'form-control', id: 'description', type: 'text', ref: 'description', rows: '8', defaultValue: this.state.description, onKeyDown: this.showButton, style: { resize: 'none' } })
 						),
 						_react2.default.createElement(
 							'dt',
@@ -29313,14 +29385,14 @@
 							this.state.tags.map(function (tag, i) {
 								return _react2.default.createElement(_noticeTags2.default, { id: i, tag: tag, key: i });
 							}),
-							_react2.default.createElement('input', { type: 'text', id: 'newTag', onKeyDown: this.addTag })
+							_react2.default.createElement('input', { type: 'text', id: 'newTag', onKeyDown: this.addTag, style: newTagStyles })
 						),
 						_react2.default.createElement(
 							'dt',
 							null,
 							_react2.default.createElement(
 								_reactRouter.Link,
-								{ to: '/', className: 'btn btn-primary' },
+								{ to: '/', className: 'btn btn-primary btn-circle' },
 								' ',
 								_react2.default.createElement('i', { className: 'glyphicon glyphicon-arrow-left' }),
 								' '
@@ -29372,14 +29444,18 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var tagStyle = {
+	  padding: '.4em .8em .5em'
+	};
+
 	var Tag = function Tag(props) {
 	  return _react2.default.createElement(
 	    'span',
 	    null,
 	    _react2.default.createElement(
 	      'span',
-	      { key: props.id, className: 'label label-primary', onClick: _actions2.default.fireAction.bind(null, 'REMOVE_TAG', { tagName: props.tag }) },
-	      props.tag
+	      { key: props.id, className: 'label label-info', onClick: _actions2.default.fireAction.bind(null, 'REMOVE_TAG', { tagName: props.tag }), style: tagStyle },
+	      '#' + props.tag
 	    ),
 	    ' ',
 	    " "
@@ -29391,6 +29467,43 @@
 	  id: _react2.default.PropTypes.number,
 	  tag: _react2.default.PropTypes.string
 	};
+
+/***/ },
+/* 271 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NavBar = function NavBar(props) {
+	  return _react2.default.createElement(
+	    "nav",
+	    { className: "navbar navbar-default" },
+	    _react2.default.createElement(
+	      "div",
+	      { className: "container" },
+	      _react2.default.createElement(
+	        "div",
+	        { className: "navbar-header" },
+	        _react2.default.createElement("img", { src: "https://d30y9cdsu7xlg0.cloudfront.net/png/102981-200.png", className: "img-responsive", alt: "", width: "24%" })
+	      )
+	    )
+	  );
+	};
+
+	exports.default = NavBar;
+
+
+	NavBar.propTypes = {};
 
 /***/ }
 /******/ ]);

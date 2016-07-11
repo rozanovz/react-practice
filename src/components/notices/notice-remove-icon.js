@@ -4,7 +4,7 @@ import AppActions from '../../actions/actions';
 const RemoveIcon = (props) => {
   return (
     <a>
-      <i className="glyphicon glyphicon-remove-circle" onClick={AppActions.fireAction.bind(null, 'DELETE_NOTICE', {id:props.id})}></i>
+      <i className="glyphicon glyphicon-remove-circle text-danger" onClick={AppActions.fireAction.bind(null, 'DELETE_NOTICE', {id:props.id})}></i>
     </a>
   );
 }
