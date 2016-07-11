@@ -5,7 +5,6 @@ import {withRouter} from 'react-router';
 const SidebarButton = (props) => {
 
   let fireAction = () => {
-
     if(props.action == 'DELETE_DIRECTORY'){
       if (window.confirm("Do you really want to delete this directory? this will delete all notices and directories in it too."))
         return AppActions.fireAction.bind(null, props.action, {id: props.id, txt:props.txt} )();

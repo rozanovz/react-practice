@@ -20408,11 +20408,11 @@
 
 	var _home2 = _interopRequireDefault(_home);
 
-	var _main = __webpack_require__(268);
+	var _main = __webpack_require__(269);
 
 	var _main2 = _interopRequireDefault(_main);
 
-	var _notice = __webpack_require__(269);
+	var _notice = __webpack_require__(270);
 
 	var _notice2 = _interopRequireDefault(_notice);
 
@@ -20457,7 +20457,7 @@
 
 	var _noticesList2 = _interopRequireDefault(_noticesList);
 
-	var _navBar = __webpack_require__(271);
+	var _navBar = __webpack_require__(268);
 
 	var _navBar2 = _interopRequireDefault(_navBar);
 
@@ -26378,7 +26378,6 @@
 	var SidebarButton = function SidebarButton(props) {
 
 	  var fireAction = function fireAction() {
-
 	    if (props.action == 'DELETE_DIRECTORY') {
 	      if (window.confirm("Do you really want to delete this directory? this will delete all notices and directories in it too.")) return _actions2.default.fireAction.bind(null, props.action, { id: props.id, txt: props.txt })();
 	    } else return _actions2.default.fireAction.bind(null, props.action, { id: props.id, txt: props.txt })();
@@ -29001,8 +29000,6 @@
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -29013,13 +29010,9 @@
 
 	var _heading2 = _interopRequireDefault(_heading);
 
-	var _noticeRemoveIcon = __webpack_require__(267);
+	var _noticeIconRemove = __webpack_require__(272);
 
-	var _noticeRemoveIcon2 = _interopRequireDefault(_noticeRemoveIcon);
-
-	var _constants = __webpack_require__(234);
-
-	var _constants2 = _interopRequireDefault(_constants);
+	var _noticeIconRemove2 = _interopRequireDefault(_noticeIconRemove);
 
 	var _store = __webpack_require__(240);
 
@@ -29027,68 +29020,27 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/* const NoticeIcon = (props) => */
-	var NoticeIcon = function (_React$Component) {
-	  _inherits(NoticeIcon, _React$Component);
-
-	  function NoticeIcon(props) {
-	    _classCallCheck(this, NoticeIcon);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NoticeIcon).call(this, props));
-
-	    _this.state = { show: true };
-	    _this.removeNotice = _this.removeNotice.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(NoticeIcon, [{
-	    key: 'removeNotice',
-	    value: function removeNotice(event) {
-	      if (event.id == this.props.item.id) this.setState({ show: false });
-	    }
-	  }, {
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      _store2.default.addChangeListener(_constants2.default.DELETE_NOTICE, this.removeNotice);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      _store2.default.removeChangeListener(_constants2.default.DELETE_NOTICE, this.removeNotice);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return this.state.show ? _react2.default.createElement(
-	        'li',
-	        { className: 'text-center' },
-	        _react2.default.createElement(
-	          'sup',
-	          { style: { top: '-2.5em', cursor: 'pointer' } },
-	          _react2.default.createElement(_noticeRemoveIcon2.default, { id: this.props.item.id })
-	        ),
-	        _react2.default.createElement(
-	          _reactRouter.Link,
-	          { to: { pathname: '/notice/' + this.props.item.id, state: { directoryId: this.props.directoryId } } },
-	          _react2.default.createElement('h1', { className: 'glyphicon glyphicon-file' })
-	        ),
-	        _react2.default.createElement(
-	          'p',
-	          null,
-	          _react2.default.createElement(_heading2.default, { params: this.props.item, action: 'UPDATE_NOTICE' })
-	        )
-	      ) : null;
-	    }
-	  }]);
-
-	  return NoticeIcon;
-	}(_react2.default.Component);
+	var NoticeIcon = function NoticeIcon(props) {
+	  return _react2.default.createElement(
+	    'li',
+	    { className: 'text-center' },
+	    _react2.default.createElement(
+	      'sup',
+	      { style: { top: '-2.5em', cursor: 'pointer' } },
+	      _react2.default.createElement(_noticeIconRemove2.default, { id: props.item.id })
+	    ),
+	    _react2.default.createElement(
+	      _reactRouter.Link,
+	      { to: { pathname: '/notice/' + props.item.id, state: { directoryId: props.directoryId } } },
+	      _react2.default.createElement('h1', { className: 'glyphicon glyphicon-file' })
+	    ),
+	    _react2.default.createElement(
+	      'p',
+	      null,
+	      _react2.default.createElement(_heading2.default, { params: props.item, action: 'UPDATE_NOTICE' })
+	    )
+	  );
+	};
 
 	exports.default = NoticeIcon;
 
@@ -29105,10 +29057,11 @@
 	};
 
 /***/ },
-/* 267 */
+/* 267 */,
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -29118,28 +29071,31 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _actions = __webpack_require__(233);
-
-	var _actions2 = _interopRequireDefault(_actions);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var RemoveIcon = function RemoveIcon(props) {
+	var NavBar = function NavBar(props) {
 	  return _react2.default.createElement(
-	    'a',
-	    null,
-	    _react2.default.createElement('i', { className: 'glyphicon glyphicon-remove-circle text-danger', onClick: _actions2.default.fireAction.bind(null, 'DELETE_NOTICE', { id: props.id }) })
+	    "nav",
+	    { className: "navbar navbar-default" },
+	    _react2.default.createElement(
+	      "div",
+	      { className: "container" },
+	      _react2.default.createElement(
+	        "div",
+	        { className: "navbar-header" },
+	        _react2.default.createElement("img", { src: "https://d30y9cdsu7xlg0.cloudfront.net/png/102981-200.png", className: "img-responsive", alt: "", width: "24%" })
+	      )
+	    )
 	  );
 	};
-	exports.default = RemoveIcon;
+
+	exports.default = NavBar;
 
 
-	RemoveIcon.propTypes = {
-	  id: _react2.default.PropTypes.number
-	};
+	NavBar.propTypes = {};
 
 /***/ },
-/* 268 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29187,7 +29143,7 @@
 	}(_react2.default.Component);
 
 /***/ },
-/* 269 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29216,7 +29172,7 @@
 
 	var _constants2 = _interopRequireDefault(_constants);
 
-	var _noticeTags = __webpack_require__(270);
+	var _noticeTags = __webpack_require__(271);
 
 	var _noticeTags2 = _interopRequireDefault(_noticeTags);
 
@@ -29425,7 +29381,7 @@
 	};
 
 /***/ },
-/* 270 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29469,10 +29425,10 @@
 	};
 
 /***/ },
-/* 271 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -29482,28 +29438,25 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _actions = __webpack_require__(233);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var NavBar = function NavBar(props) {
+	var RemoveIcon = function RemoveIcon(props) {
 	  return _react2.default.createElement(
-	    "nav",
-	    { className: "navbar navbar-default" },
-	    _react2.default.createElement(
-	      "div",
-	      { className: "container" },
-	      _react2.default.createElement(
-	        "div",
-	        { className: "navbar-header" },
-	        _react2.default.createElement("img", { src: "https://d30y9cdsu7xlg0.cloudfront.net/png/102981-200.png", className: "img-responsive", alt: "", width: "24%" })
-	      )
-	    )
+	    'a',
+	    null,
+	    _react2.default.createElement('i', { className: 'glyphicon glyphicon-remove-circle text-danger', onClick: _actions2.default.fireAction.bind(null, 'DELETE_NOTICE', { id: props.id }) })
 	  );
 	};
+	exports.default = RemoveIcon;
 
-	exports.default = NavBar;
 
-
-	NavBar.propTypes = {};
+	RemoveIcon.propTypes = {
+	  id: _react2.default.PropTypes.number
+	};
 
 /***/ }
 /******/ ]);

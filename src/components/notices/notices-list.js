@@ -1,5 +1,5 @@
 import React from 'react';
-import NoticeIcon from './notice-icon';
+import NoticeIconContainer from './notice-icon';
 import NoticeStore from '../../stores/store';
 import AppActions from '../../actions/actions';
 import AppConstants from '../../constants/constants';
@@ -42,7 +42,7 @@ export default class NoticesList extends React.Component {
 			<div className="col-xs-5">
 				<h1 style={{marginTop: 0}}>{this.state.activeFolder}</h1>
 				<ul className="list-inline">
-					{this.state.noticesItems.map(notice => notice.directoryId == this.props.folderId ? <NoticeIcon key={notice.id} item={notice} /> : null)}
+					{this.state.noticesItems.map(notice => notice.directoryId == this.props.folderId ? <NoticeIconContainer key={notice.id} item={notice} /> : null)}
 				</ul>
 			</div>
 		);
